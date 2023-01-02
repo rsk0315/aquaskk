@@ -24,9 +24,12 @@
 #include "SKKCandidateWindow.h"
 #include <cassert>
 
-SKKWindowSelector::SKKWindowSelector(SKKCandidateWindow* window) : window_(window) {}
+SKKWindowSelector::SKKWindowSelector(SKKCandidateWindow* window)
+    : window_(window) {}
 
-void SKKWindowSelector::Initialize(SKKCandidateContainer& container, unsigned inlineCount) {
+void SKKWindowSelector::Initialize(
+    SKKCandidateContainer& container, unsigned inlineCount
+) {
     range_.set(container, inlineCount);
     window_->Setup(range_.begin(), range_.end(), pages_);
 
@@ -38,12 +41,12 @@ void SKKWindowSelector::Initialize(SKKCandidateContainer& container, unsigned in
 }
 
 bool SKKWindowSelector::Next() {
-    if(page_pos_ == maxPage()) {
-	return false;
+    if (page_pos_ == maxPage()) {
+        return false;
     }
 
     offset_ += pages_[page_pos_];
-    ++ page_pos_;
+    ++page_pos_;
     cursor_pos_ = 0;
 
     refresh();
@@ -53,11 +56,11 @@ bool SKKWindowSelector::Next() {
 }
 
 bool SKKWindowSelector::Prev() {
-    if(page_pos_ == minPage()) {
-	return false;
+    if (page_pos_ == minPage()) {
+        return false;
     }
 
-    -- page_pos_;
+    --page_pos_;
     offset_ -= pages_[page_pos_];
     cursor_pos_ = 0;
 
@@ -73,21 +76,19 @@ const SKKCandidate& SKKWindowSelector::Current() const {
     return view_[cursor_pos_];
 }
 
-bool SKKWindowSelector::IsEmpty() const {
-    return range_.empty();
-}
+bool SKKWindowSelector::IsEmpty() const { return range_.empty(); }
 
 void SKKWindowSelector::CursorLeft() {
-    if(cursor_pos_ != minPosition()) {
-	-- cursor_pos_;
-	Show();
+    if (cursor_pos_ != minPosition()) {
+        --cursor_pos_;
+        Show();
     }
 }
 
 void SKKWindowSelector::CursorRight() {
-    if(cursor_pos_ != maxPosition()) {
-	++ cursor_pos_;
-	Show();
+    if (cursor_pos_ != maxPosition()) {
+        ++cursor_pos_;
+        Show();
     }
 }
 
@@ -104,42 +105,34 @@ void SKKWindowSelector::CursorDown() {
 bool SKKWindowSelector::Select(char label) {
     int index = window_->LabelIndex(label);
 
-    if(-1 < index && (unsigned)index < view_.size()) {
-	cursor_pos_ = index;
-	Show();
-	return true;
+    if (-1 < index && (unsigned)index < view_.size()) {
+        cursor_pos_ = index;
+        Show();
+        return true;
     }
 
     return false;
 }
 
 void SKKWindowSelector::Show() {
-    window_->Update(view_.begin(), view_.end(), cursor_pos_, page_pos_ + 1, pages_.size());
+    window_->Update(
+        view_.begin(), view_.end(), cursor_pos_, page_pos_ + 1, pages_.size()
+    );
     window_->Show();
 }
 
-void SKKWindowSelector::Hide() {
-    window_->Hide();
-}
+void SKKWindowSelector::Hide() { window_->Hide(); }
 
 void SKKWindowSelector::refresh() {
-    if(!pages_.empty()) {
-	view_ = PageRange(range_, offset_, pages_[page_pos_]);
+    if (!pages_.empty()) {
+        view_ = PageRange(range_, offset_, pages_[page_pos_]);
     }
 }
 
-int SKKWindowSelector::minPage() const {
-    return 0;
-}
+int SKKWindowSelector::minPage() const { return 0; }
 
-int SKKWindowSelector::maxPage() const {
-    return pages_.size() - 1;
-}
+int SKKWindowSelector::maxPage() const { return pages_.size() - 1; }
 
-int SKKWindowSelector::minPosition() const {
-    return 0;
-}
+int SKKWindowSelector::minPosition() const { return 0; }
 
-int SKKWindowSelector::maxPosition() const {
-    return view_.size() - 1;
-}
+int SKKWindowSelector::maxPosition() const { return view_.size() - 1; }

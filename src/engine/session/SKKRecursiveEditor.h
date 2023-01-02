@@ -23,8 +23,8 @@
 #ifndef SKKRecursiveEditor_h
 #define SKKRecursiveEditor_h
 
-#include "SKKInputEnvironment.h"
 #include "SKKInputEngine.h"
+#include "SKKInputEnvironment.h"
 #include "SKKStateMachine.h"
 #include <memory>
 

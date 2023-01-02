@@ -1,22 +1,16 @@
-#include <cassert>
-#include "SKKDictionaryKeeper.h"
 #include "MockCompletionHelper.h"
+#include "SKKDictionaryKeeper.h"
+#include <cassert>
 
 class DebugLoader : public SKKDictionaryLoader {
     std::string path_;
 
-    virtual bool NeedsUpdate() {
-        return true;
-    }
+    virtual bool NeedsUpdate() { return true; }
 
-    virtual const std::string& FilePath() const {
-        return path_;
-    }
+    virtual const std::string& FilePath() const { return path_; }
 
 public:
-    virtual void Initialize(const std::string& path) {
-        path_ = path;
-    }
+    virtual void Initialize(const std::string& path) { path_ = path; }
 
     virtual int Interval() const { return 5; }
 

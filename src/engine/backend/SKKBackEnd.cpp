@@ -20,14 +20,14 @@
 
 */
 
+#include "SKKBackEnd.h"
+#include "SKKCandidateFilter.h"
+#include "SKKCandidateSuite.h"
+#include "SKKLocalUserDictionary.h"
+#include "SKKNumericConverter.h"
+#include "utf8util.h"
 #include <iostream>
 #include <set>
-#include "SKKBackEnd.h"
-#include "SKKLocalUserDictionary.h"
-#include "SKKCandidateSuite.h"
-#include "SKKNumericConverter.h"
-#include "SKKCandidateFilter.h"
-#include "utf8util.h"
 
 namespace {
     // 検索用ファンクタ
@@ -78,26 +78,29 @@ namespace {
         unsigned minimumLength_;
         unsigned completionLimit_;
         bool needsLengthCheck_;
-        
+
     public:
-        CompletionHelper(const std::string& entry, int minimumLength, int completionLimit)
-            : entry_(entry), minimumLength_(minimumLength), completionLimit_(completionLimit) {
+        CompletionHelper(
+            const std::string& entry, int minimumLength, int completionLimit
+        )
+            : entry_(entry), minimumLength_(minimumLength),
+              completionLimit_(completionLimit) {
             needsLengthCheck_ = utf8::length(entry) < minimumLength_;
             check_.insert(entry_);
         }
 
-        virtual const std::string& Entry() const {
-            return entry_;
-        }
+        virtual const std::string& Entry() const { return entry_; }
 
         virtual void Add(const std::string& completion) {
-            if(!CanContinue()) return;
+            if (!CanContinue())
+                return;
 
-            if(needsLengthCheck_ && utf8::length(completion) <= minimumLength_) {
+            if (needsLengthCheck_ &&
+                utf8::length(completion) <= minimumLength_) {
                 return;
             }
 
-            if(check_.find(completion) == check_.end()) {
+            if (check_.find(completion) == check_.end()) {
                 check_.insert(completion);
                 result_.push_back(completion);
             }
@@ -107,72 +110,73 @@ namespace {
             return completionLimit_ == 0 || result_.size() < completionLimit_;
         }
 
-        operator std::vector<std::string>&() {
-            return result_;
-        }
+        operator std::vector<std::string>&() { return result_; }
     };
-}
+} // namespace
 
 SKKBackEnd::SKKBackEnd()
-    : userdict_(0)
-    , useNumericConversion_(false)
-    , enableExtendedCompletion_(false)
-    , minimumCompletionLength_(0)
-{}
+    : userdict_(0), useNumericConversion_(false),
+      enableExtendedCompletion_(false), minimumCompletionLength_(0) {}
 
 SKKBackEnd& SKKBackEnd::theInstance() {
     static SKKBackEnd obj;
     return obj;
 }
 
-void SKKBackEnd::Initialize(const std::string& userdict_path, const SKKDictionaryKeyContainer& keys) {
-    if(userdict_.get() == 0) {
+void SKKBackEnd::Initialize(
+    const std::string& userdict_path, const SKKDictionaryKeyContainer& keys
+) {
+    if (userdict_.get() == 0) {
         userdict_.reset(new SKKLocalUserDictionary());
     }
 
     userdict_->Initialize(userdict_path);
 
     // 不要な辞書を破棄する
-    for(unsigned i = 0; i < actives_.size(); ++ i) {
-	if(std::find(keys.begin(), keys.end(), actives_[i]) == keys.end()) {
-	    cache_.Clear(actives_[i]);
-	}
+    for (unsigned i = 0; i < actives_.size(); ++i) {
+        if (std::find(keys.begin(), keys.end(), actives_[i]) == keys.end()) {
+            cache_.Clear(actives_[i]);
+        }
     }
 
     // 辞書を初期化する
     dicts_.clear();
     dicts_.push_back(userdict_.get());
-    for(unsigned i = 0; i < keys.size(); ++ i) {
-	dicts_.push_back(cache_.Get(keys[i]));
+    for (unsigned i = 0; i < keys.size(); ++i) {
+        dicts_.push_back(cache_.Get(keys[i]));
     }
 
     actives_ = keys;
 }
 
-void SKKBackEnd::Initialize(SKKUserDictionary* dictionary, const SKKDictionaryKeyContainer& keys) {
+void SKKBackEnd::Initialize(
+    SKKUserDictionary* dictionary, const SKKDictionaryKeyContainer& keys
+) {
     userdict_.reset(dictionary);
 
     // 不要な辞書を破棄する
-    for(unsigned i = 0; i < actives_.size(); ++ i) {
-	if(std::find(keys.begin(), keys.end(), actives_[i]) == keys.end()) {
-	    cache_.Clear(actives_[i]);
-	}
+    for (unsigned i = 0; i < actives_.size(); ++i) {
+        if (std::find(keys.begin(), keys.end(), actives_[i]) == keys.end()) {
+            cache_.Clear(actives_[i]);
+        }
     }
 
     // 辞書を初期化する
     dicts_.clear();
     dicts_.push_back(userdict_.get());
-    for(unsigned i = 0; i < keys.size(); ++ i) {
-	dicts_.push_back(cache_.Get(keys[i]));
+    for (unsigned i = 0; i < keys.size(); ++i) {
+        dicts_.push_back(cache_.Get(keys[i]));
     }
 
     actives_ = keys;
 }
 
-bool SKKBackEnd::Complete(const std::string& key, std::vector<std::string>& result, unsigned limit) {
+bool SKKBackEnd::Complete(
+    const std::string& key, std::vector<std::string>& result, unsigned limit
+) {
     CompletionHelper helper(key, minimumCompletionLength_, limit);
 
-    if(key.empty() || !enableExtendedCompletion_) {
+    if (key.empty() || !enableExtendedCompletion_) {
         userdict_->Complete(helper);
     } else {
         std::for_each(dicts_.begin(), dicts_.end(), ApplyComplete(helper));
@@ -188,20 +192,24 @@ bool SKKBackEnd::Find(const SKKEntry& entry, SKKCandidateSuite& result) {
 
     std::for_each(dicts_.begin(), dicts_.end(), ApplyFind(entry, result));
 
-    if(!entry.IsOkuriAri()) {
+    if (!entry.IsOkuriAri()) {
         SKKNumericConverter converter;
 
-        if(useNumericConversion_ && converter.Setup(entry.EntryString())) {
+        if (useNumericConversion_ && converter.Setup(entry.EntryString())) {
             SKKCandidateSuite suite;
 
-            std::for_each(dicts_.begin(), dicts_.end(),
-                          ApplyFind(converter.NormalizedKey(), suite));
+            std::for_each(
+                dicts_.begin(), dicts_.end(),
+                ApplyFind(converter.NormalizedKey(), suite)
+            );
 
             SKKCandidateContainer& cands = suite.Candidates();
 
-            std::transform(cands.begin(), cands.end(),
-                           std::back_inserter(result.Candidates()),
-                           NumericConversion(converter));
+            std::transform(
+                cands.begin(), cands.end(),
+                std::back_inserter(result.Candidates()),
+                NumericConversion(converter)
+            );
         }
 
         result.Remove(SKKCandidate(converter.OriginalKey()));
@@ -213,12 +221,13 @@ bool SKKBackEnd::Find(const SKKEntry& entry, SKKCandidateSuite& result) {
 }
 
 std::string SKKBackEnd::ReverseLookup(const std::string& candidate) {
-    if(candidate.empty()) return "";
+    if (candidate.empty())
+        return "";
 
-    for(unsigned i = 0; i < dicts_.size(); ++ i) {
+    for (unsigned i = 0; i < dicts_.size(); ++i) {
         std::string entry(dicts_[i]->ReverseLookup(candidate));
 
-        if(!entry.empty()) {
+        if (!entry.empty()) {
             return entry;
         }
     }
@@ -226,14 +235,17 @@ std::string SKKBackEnd::ReverseLookup(const std::string& candidate) {
     return "";
 }
 
-void SKKBackEnd::Register(const SKKEntry& entry, const SKKCandidate& candidate) {
-    if(entry.EntryString().empty() ||
-       (entry.IsOkuriAri() && (entry.OkuriString().empty() || candidate.IsEmpty()))) {
-	std::cerr << "SKKBackEnd: Invalid registration received" << std::endl;
-	return;
+void SKKBackEnd::Register(
+    const SKKEntry& entry, const SKKCandidate& candidate
+) {
+    if (entry.EntryString().empty() ||
+        (entry.IsOkuriAri() &&
+         (entry.OkuriString().empty() || candidate.IsEmpty()))) {
+        std::cerr << "SKKBackEnd: Invalid registration received" << std::endl;
+        return;
     }
 
-    if(candidate.AvoidStudy()) {
+    if (candidate.AvoidStudy()) {
         return;
     }
 
@@ -241,9 +253,9 @@ void SKKBackEnd::Register(const SKKEntry& entry, const SKKCandidate& candidate) 
 }
 
 void SKKBackEnd::Remove(const SKKEntry& entry, const SKKCandidate& candidate) {
-    if(entry.EntryString().empty()) {
-	std::cerr << "SKKBackEnd: Invalid removal received" << std::endl;
-	return;
+    if (entry.EntryString().empty()) {
+        std::cerr << "SKKBackEnd: Invalid removal received" << std::endl;
+        return;
     }
 
     userdict_->Remove(normalize(entry), candidate);
@@ -269,7 +281,7 @@ void SKKBackEnd::SetMinimumCompletionLength(int length) {
 
 SKKEntry SKKBackEnd::normalize(const SKKEntry& entry) {
     // 送りありなら何もしない
-    if(entry.IsOkuriAri()) {
+    if (entry.IsOkuriAri()) {
         return entry;
     }
 
@@ -277,8 +289,8 @@ SKKEntry SKKBackEnd::normalize(const SKKEntry& entry) {
     SKKEntry result(entry);
 
     // 単語登録と削除時には、数値だけの見出し語を正規化しない
-    if(useNumericConversion_ && converter.Setup(entry.EntryString())) {
-        if(converter.NormalizedKey() != "#") {
+    if (useNumericConversion_ && converter.Setup(entry.EntryString())) {
+        if (converter.NormalizedKey() != "#") {
             result.SetEntry(converter.NormalizedKey());
         }
     }

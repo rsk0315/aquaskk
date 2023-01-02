@@ -1,5 +1,5 @@
-#include <cassert>
 #include "SKKCandidate.h"
+#include <cassert>
 
 int main() {
     SKKCandidate c1;

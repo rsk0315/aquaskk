@@ -23,10 +23,10 @@
 #ifndef SKKInputEnvironment_h
 #define SKKInputEnvironment_h
 
-#include "SKKInputContext.h"
-#include "SKKInputSessionParameter.h"
-#include "SKKInputModeSelector.h"
 #include "SKKBaseEditor.h"
+#include "SKKInputContext.h"
+#include "SKKInputModeSelector.h"
+#include "SKKInputSessionParameter.h"
 #include <memory>
 
 class SKKInputEnvironment {
@@ -36,10 +36,10 @@ class SKKInputEnvironment {
     std::auto_ptr<SKKBaseEditor> bottom_;
 
 public:
-    SKKInputEnvironment(SKKInputContext* context,
-                        SKKInputSessionParameter* param,
-                        SKKInputModeListenerCollection* listeners,
-                        SKKBaseEditor* bottom);
+    SKKInputEnvironment(
+        SKKInputContext* context, SKKInputSessionParameter* param,
+        SKKInputModeListenerCollection* listeners, SKKBaseEditor* bottom
+    );
 
     SKKConfig* Config();
     SKKInputContext* InputContext();

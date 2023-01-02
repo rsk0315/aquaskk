@@ -23,19 +23,19 @@
 #ifndef SKKBaseDictionary_h
 #define SKKBaseDictionary_h
 
+#include "SKKCandidateSuite.h"
+#include "SKKCompletionHelper.h"
+#include "SKKEntry.h"
 #include <iostream>
 #include <string>
 #include <vector>
-#include "SKKEntry.h"
-#include "SKKCandidateSuite.h"
-#include "SKKCompletionHelper.h"
 
 // ======================================================================
 // 抽象辞書クラス(文字列は UTF-8)
 // ======================================================================
 class SKKBaseDictionary {
 public:
-    virtual ~SKKBaseDictionary() {};
+    virtual ~SKKBaseDictionary(){};
 
     // 辞書の初期化
     //

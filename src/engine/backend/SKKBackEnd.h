@@ -20,16 +20,16 @@
 
 */
 
-#ifndef	SKKBackEnd_h
+#ifndef SKKBackEnd_h
 #define SKKBackEnd_h
 
 #include "SKKCandidateSuite.h"
-#include "SKKDictionaryKey.h"
 #include "SKKDictionaryCache.h"
+#include "SKKDictionaryKey.h"
 #include "SKKEntry.h"
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
 class SKKBaseDictionary;
 class SKKUserDictionary;
@@ -52,13 +52,20 @@ class SKKBackEnd {
 public:
     static SKKBackEnd& theInstance();
 
-    void Initialize(const std::string& userdict_path, const SKKDictionaryKeyContainer& keys);
+    void Initialize(
+        const std::string& userdict_path, const SKKDictionaryKeyContainer& keys
+    );
 
     // 初期化
-    void Initialize(SKKUserDictionary* dictionary, const SKKDictionaryKeyContainer& keys);
+    void Initialize(
+        SKKUserDictionary* dictionary, const SKKDictionaryKeyContainer& keys
+    );
 
     // 補完
-    bool Complete(const std::string& key, std::vector<std::string>& result, unsigned limit = 0);
+    bool Complete(
+        const std::string& key, std::vector<std::string>& result,
+        unsigned limit = 0
+    );
 
     // 検索
     bool Find(const SKKEntry& entry, SKKCandidateSuite& result);

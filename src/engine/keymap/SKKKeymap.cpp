@@ -20,18 +20,14 @@
 
 */
 
-#include <fstream>
-#include "SKKKeyState.h"
 #include "SKKKeymap.h"
+#include "SKKKeyState.h"
 #include "SKKKeymapEntry.h"
+#include <fstream>
 
-void SKKKeymap::Initialize(const std::string& path) {
-    load(path, true);
-}
+void SKKKeymap::Initialize(const std::string& path) { load(path, true); }
 
-void SKKKeymap::Patch(const std::string& path) {
-    load(path, false);
-}
+void SKKKeymap::Patch(const std::string& path) { load(path, false); }
 
 SKKEvent SKKKeymap::Fetch(int charcode, int keycode, int mods) {
     SKKEvent event;
@@ -41,23 +37,23 @@ SKKEvent SKKKeymap::Fetch(int charcode, int keycode, int mods) {
     event.code = charcode;
 
     iter = find(charcode, keycode, mods, events_);
-    if(iter != events_.end()) {
-	event.id = iter->second;
+    if (iter != events_.end()) {
+        event.id = iter->second;
     } else {
         event.id = SKK_CHAR;
     }
 
     // SKK_CHAR イベントなら属性も調べる
-    if(event.id == SKK_CHAR) {
-	iter = find(charcode, keycode, mods, attributes_);
-	if(iter != attributes_.end()) {
+    if (event.id == SKK_CHAR) {
+        iter = find(charcode, keycode, mods, attributes_);
+        if (iter != attributes_.end()) {
             event.attribute = iter->second;
         }
     }
 
     // 処理オプションを検索する
     iter = find(charcode, keycode, mods, option_);
-    if(iter != option_.end()) {
+    if (iter != option_.end()) {
         event.option = iter->second;
     }
 
@@ -67,10 +63,11 @@ SKKEvent SKKKeymap::Fetch(int charcode, int keycode, int mods) {
 void SKKKeymap::load(const std::string& path, bool initialize) {
     std::ifstream config(path.c_str());
 
-    if(!config) return;
+    if (!config)
+        return;
 
     // 初期化
-    if(initialize) {
+    if (initialize) {
         events_.clear();
         attributes_.clear();
         option_.clear();
@@ -78,24 +75,24 @@ void SKKKeymap::load(const std::string& path, bool initialize) {
 
     std::string configKey;
     std::string configValue;
-    while(config >> configKey >> configValue) {
+    while (config >> configKey >> configValue) {
         // コメントは無視
-	if(!configKey.empty() && configKey[0] != '#') {
-	    SKKKeymapEntry entry(configKey, configValue);
+        if (!configKey.empty() && configKey[0] != '#') {
+            SKKKeymapEntry entry(configKey, configValue);
 
-	    // キー情報を読み取る
-	    int key;
-	    while(entry >> key) {
+            // キー情報を読み取る
+            int key;
+            while (entry >> key) {
                 // 明示的なイベント
-                if(entry.IsEvent()) {
+                if (entry.IsEvent()) {
                     events_[key] = entry.Symbol();
                     continue;
                 }
 
                 // SKK_CHAR 属性
-                if(entry.IsAttribute()) {
+                if (entry.IsAttribute()) {
                     // NotInputChars q とあった場合、qからInputChars属性をはずす
-                    if(entry.IsNot()) {
+                    if (entry.IsNot()) {
                         attributes_[key] &= ~entry.Symbol();
                     } else {
                         events_[key] = SKK_CHAR;
@@ -113,25 +110,26 @@ void SKKKeymap::load(const std::string& path, bool initialize) {
     }
 }
 
-SKKKeymap::Keymap::iterator SKKKeymap::find(int charcode, int keycode, int mods, Keymap& keymap) {
+SKKKeymap::Keymap::iterator
+SKKKeymap::find(int charcode, int keycode, int mods, Keymap& keymap) {
     Keymap::iterator iter;
 
     // まずキーコードで調べる(優先度高)
     iter = keymap.find(SKKKeyState::KeyCode(keycode, mods));
-    if(iter != keymap.end()) {
-	return iter;
+    if (iter != keymap.end()) {
+        return iter;
     }
 
     // キャラクターコードを調べる
     iter = keymap.find(SKKKeyState::CharCode(charcode, mods));
-    if(iter != keymap.end()) {
-	return iter;
+    if (iter != keymap.end()) {
+        return iter;
     }
 
     // 互換性保持のためシフトを押してない場合のキーマップを調べる
-    if(std::isgraph(charcode) && (mods & SKKKeyState::SHIFT)) {
-	return find(charcode, keycode, mods & ~SKKKeyState::SHIFT, keymap);
+    if (std::isgraph(charcode) && (mods & SKKKeyState::SHIFT)) {
+        return find(charcode, keycode, mods & ~SKKKeyState::SHIFT, keymap);
     }
 
     return keymap.end();
- }
+}

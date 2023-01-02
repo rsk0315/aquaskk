@@ -23,8 +23,8 @@
 #ifndef SKKInputSession_h
 #define SKKInputSession_h
 
-#include "SKKInputModeListener.h"
 #include "SKKInputContext.h"
+#include "SKKInputModeListener.h"
 #include "SKKStateMachine.h"
 #include <vector>
 

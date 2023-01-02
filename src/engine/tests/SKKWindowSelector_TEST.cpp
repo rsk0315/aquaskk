@@ -1,6 +1,6 @@
-#include <cassert>
-#include "SKKWindowSelector.h"
 #include "SKKCandidateWindow.h"
+#include "SKKWindowSelector.h"
+#include <cassert>
 
 #include "MockCandidateWindow.h"
 
@@ -15,10 +15,13 @@ int main() {
     container.push_back(SKKCandidate("候補4"));
     container.push_back(SKKCandidate("候補5"));
     container.push_back(SKKCandidate("候補6"));
-    
+
     selector.Initialize(container, 3);
 
-    assert(!selector.IsEmpty() && !selector.Prev() && selector.Current().ToString() == "候補4");
+    assert(
+        !selector.IsEmpty() && !selector.Prev() &&
+        selector.Current().ToString() == "候補4"
+    );
 
     selector.CursorRight();
     selector.CursorRight();

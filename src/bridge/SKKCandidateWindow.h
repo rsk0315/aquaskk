@@ -23,16 +23,19 @@
 #ifndef SKKCandidateWindow_h
 #define SKKCandidateWindow_h
 
-#include <vector>
-#include "SKKWidget.h"
 #include "SKKCandidate.h"
+#include "SKKWidget.h"
+#include <vector>
 
 class SKKCandidateWindow : public SKKWidget {
 public:
     virtual ~SKKCandidateWindow() {}
 
     // 各ページ毎に表示可能な候補数を求める
-    virtual void Setup(SKKCandidateIterator begin, SKKCandidateIterator end, std::vector<int>& pages) = 0;
+    virtual void Setup(
+        SKKCandidateIterator begin, SKKCandidateIterator end,
+        std::vector<int>& pages
+    ) = 0;
 
     // 更新
     //
@@ -40,8 +43,10 @@ public:
     // cursor=カーソル位置
     // page_pos=現在ページ位置
     // page_max=全ページ数
-    virtual void Update(SKKCandidateIterator begin, SKKCandidateIterator end,
-                        int cursor, int page_pos, int page_max) = 0;
+    virtual void Update(
+        SKKCandidateIterator begin, SKKCandidateIterator end, int cursor,
+        int page_pos, int page_max
+    ) = 0;
 
     // 候補ラベルのインデックス取得(一致しない場合には -1)
     virtual int LabelIndex(char label) = 0;

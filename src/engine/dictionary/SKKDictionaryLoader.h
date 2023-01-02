@@ -39,17 +39,17 @@ class SKKDictionaryLoader : public pthread::task {
     SKKDictionaryFile file_;
 
     virtual bool run() {
-        if(first_) {
+        if (first_) {
             first_ = false;
             notify();
         }
-        
-        if(NeedsUpdate()) {
+
+        if (NeedsUpdate()) {
             notify();
         } else {
             // 不要な pthread_cond_wait を回避するため、空のファイルを
             // 通知する
-            if(file_.IsEmpty()) {
+            if (file_.IsEmpty()) {
                 observer_->SKKDictionaryLoaderUpdate(file_);
             }
         }
@@ -58,7 +58,7 @@ class SKKDictionaryLoader : public pthread::task {
     }
 
     void notify() {
-        if(file_.Load(FilePath())) {
+        if (file_.Load(FilePath())) {
             file_.Sort();
             observer_->SKKDictionaryLoaderUpdate(file_);
         }
@@ -68,7 +68,7 @@ public:
     SKKDictionaryLoader() : first_(true), observer_(0) {}
 
     void Connect(SKKDictionaryLoaderObserver* observer) {
-	observer_ = observer;
+        observer_ = observer;
     }
 
     // 初期化

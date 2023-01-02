@@ -54,10 +54,16 @@ public:
     virtual void Input(const std::string& ascii) {}
 
     // 入力処理(fixed=確定文字列, input=入力文字列, code=入力文字)
-    virtual void Input(const std::string& fixed, const std::string& input, char code) {}
+    virtual void
+    Input(const std::string& fixed, const std::string& input, char code) {}
 
     enum Event {
-        BackSpace, Delete, CursorLeft, CursorRight, CursorUp, CursorDown
+        BackSpace,
+        Delete,
+        CursorLeft,
+        CursorRight,
+        CursorUp,
+        CursorDown
     };
 
     // 入力処理(event=イベント)

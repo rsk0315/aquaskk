@@ -1,15 +1,15 @@
+#include "SKKBackEnd.h"
 #include "SKKInputSession.h"
 #include "SKKKeymap.h"
 #include "SKKRomanKanaConverter.h"
-#include "SKKBackEnd.h"
 
 #include "MockInputSessionParameter.h"
 #include "TestData.h"
 
+#include <cassert>
+#include <fstream>
 #include <ios>
 #include <iostream>
-#include <fstream>
-#include <cassert>
 
 class TestRunner {
     MockInputSessionParameter* param;
@@ -19,7 +19,7 @@ class TestRunner {
 
     SKKEvent getEvent(TestEntry& entry) {
         TestEvent& input = entry.input;
-        
+
         return map.Fetch(input.code, 0, input.mods);
     }
 
@@ -43,8 +43,8 @@ class TestRunner {
         int success = 0;
         TestEntry entry;
 
-        while(test >> entry) {
-            ++ total;
+        while (test >> entry) {
+            ++total;
             TestResult& actual = param->Result();
 
             actual.Clear();
@@ -53,25 +53,25 @@ class TestRunner {
             param->SetYankString(entry.input.yank);
 
             SKKEvent event = getEvent(entry);
-            
+
             actual.ret = session.HandleEvent(event);
 
-            if(actual != entry.expected) {
+            if (actual != entry.expected) {
                 std::cerr << std::endl;
-                std::cerr << "*** test failed *** line=" << entry.line << std::endl;
+                std::cerr << "*** test failed *** line=" << entry.line
+                          << std::endl;
                 std::cerr << "\t" << event.dump() << std::endl;
                 entry.expected.Dump("\texpected: ");
-                        actual.Dump("\t  actual: ");
+                actual.Dump("\t  actual: ");
                 std::cerr << std::endl;
             } else {
-                ++ success;
+                ++success;
             }
         }
 
         std::cerr << "success=" << success << " / "
-                  << "total=" << total
-                  << ", (" << (double)success / total * 100 << "%)"
-                  << std::endl;
+                  << "total=" << total << ", (" << (double)success / total * 100
+                  << "%)" << std::endl;
     }
 
 public:
@@ -81,9 +81,7 @@ public:
         test.Load(path);
     }
 
-    void Run() {
-        execute();
-    }
+    void Run() { execute(); }
 };
 
 int main() {

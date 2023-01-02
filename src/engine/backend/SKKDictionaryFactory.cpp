@@ -20,9 +20,9 @@
 
 */
 
-#include <iostream>
 #include "SKKDictionaryFactory.h"
 #include "SKKBaseDictionary.h"
+#include <iostream>
 
 // Null 辞書
 class SKKNullDictionary : public SKKBaseDictionary {
@@ -40,19 +40,20 @@ SKKDictionaryFactory& SKKDictionaryFactory::theInstance() {
 }
 
 void SKKDictionaryFactory::Register(int type, SKKDictionaryCreator creator) {
-    if(creators_.find(type) != creators_.end()) {
-	std::cerr << "type=" << type << " already has a creator" << std::endl;
-	return;
+    if (creators_.find(type) != creators_.end()) {
+        std::cerr << "type=" << type << " already has a creator" << std::endl;
+        return;
     }
 
     creators_[type] = creator;
 }
 
-SKKBaseDictionary* SKKDictionaryFactory::Create(int type, const std::string& location) {
-    if(creators_.find(type) == creators_.end()) {
-	std::cerr << "type=" << type << " does not have a creator" << std::endl;
-	return new SKKNullDictionary();
+SKKBaseDictionary*
+SKKDictionaryFactory::Create(int type, const std::string& location) {
+    if (creators_.find(type) == creators_.end()) {
+        std::cerr << "type=" << type << " does not have a creator" << std::endl;
+        return new SKKNullDictionary();
     }
 
-    return creators_[type](location); 
+    return creators_[type](location);
 }

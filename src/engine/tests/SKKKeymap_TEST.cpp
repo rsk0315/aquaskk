@@ -1,8 +1,8 @@
-#include <cassert>
-#include <iostream>
+#include "SKKKeyState.h"
 #include "SKKKeymap.h"
 #include "SKKKeymapEntry.h"
-#include "SKKKeyState.h"
+#include <cassert>
+#include <iostream>
 
 int main() {
     SKKKeymap keymap;
@@ -11,11 +11,17 @@ int main() {
     keymap.Initialize("keymap.conf");
 
     assert(keymap.Fetch(0, 0, 0) == SKKEvent(SKK_CHAR, 0, 0));
-    assert(keymap.Fetch('j', 0, SKKKeyState::CTRL) == SKKEvent(SKK_JMODE, 'j', 0));
+    assert(
+        keymap.Fetch('j', 0, SKKKeyState::CTRL) == SKKEvent(SKK_JMODE, 'j', 0)
+    );
     assert(keymap.Fetch(0x03, 0, 0) == SKKEvent(SKK_ENTER, 0x03, 0));
     assert(keymap.Fetch(0x09, 0, 0) == SKKEvent(SKK_TAB, 0x09, 0));
-    assert(keymap.Fetch('i', 0, SKKKeyState::CTRL) == SKKEvent(SKK_TAB, 'i', 0));
-    assert(keymap.Fetch('g', 0, SKKKeyState::CTRL) == SKKEvent(SKK_CANCEL, 'g', 0));
+    assert(
+        keymap.Fetch('i', 0, SKKKeyState::CTRL) == SKKEvent(SKK_TAB, 'i', 0)
+    );
+    assert(
+        keymap.Fetch('g', 0, SKKKeyState::CTRL) == SKKEvent(SKK_CANCEL, 'g', 0)
+    );
     assert(keymap.Fetch(0x1c, 0, 0) == SKKEvent(SKK_LEFT, 0x1c, 0));
 
     param = keymap.Fetch('b', 0, 0);
@@ -37,7 +43,7 @@ int main() {
     assert(param == SKKEvent(SKK_RIGHT, 'f', 0));
 
     param = keymap.Fetch(0x20, 0, SKKKeyState::SHIFT);
-    assert(param == SKKEvent(SKK_CHAR, 0x20, PrevCandidate|CompConversion));
+    assert(param == SKKEvent(SKK_CHAR, 0x20, PrevCandidate | CompConversion));
 
     param = keymap.Fetch('v', 0, SKKKeyState::META);
     assert(param == SKKEvent(SKK_PASTE, 'v', 0));
@@ -54,6 +60,4 @@ int main() {
 
     param = keymap.Fetch('"', 0, 0);
     assert(param == SKKEvent(SKK_CHAR, '"', UpperCases | InputChars));
-
-
 }

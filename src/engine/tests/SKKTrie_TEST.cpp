@@ -1,7 +1,7 @@
+#include "SKKTrie.h"
 #include <cassert>
 #include <iostream>
 #include <sstream>
-#include "SKKTrie.h"
 
 class DebugHelper : public SKKTrieHelper {
     SKKInputMode mode;
@@ -10,17 +10,13 @@ class DebugHelper : public SKKTrieHelper {
     std::string output;
     std::string intermediate;
 
-    virtual const std::string& SKKTrieRomanString() const {
-        return string;
-    }
+    virtual const std::string& SKKTrieRomanString() const { return string; }
 
     virtual void SKKTrieNotifyConverted(const SKKTrie* node) {
         output += node->KanaString(mode);
     }
 
-    virtual void SKKTrieNotifyNotConverted(char code) {
-        output += code;
-    }
+    virtual void SKKTrieNotifyNotConverted(char code) { output += code; }
 
     virtual void SKKTrieNotifyIntermediate(const SKKTrie* node) {
         intermediate += node->KanaString(mode);
@@ -30,11 +26,12 @@ class DebugHelper : public SKKTrieHelper {
         string = string.substr(length);
     }
 
-    virtual void SKKTrieNotifyShort() {
-    }
+    virtual void SKKTrieNotifyShort() {}
 
 public:
-    void Initialize(const std::string& str, SKKInputMode inputMode = HirakanaInputMode) {
+    void Initialize(
+        const std::string& str, SKKInputMode inputMode = HirakanaInputMode
+    ) {
         mode = inputMode;
         string = original = str;
         output.clear();
@@ -43,10 +40,8 @@ public:
 
     std::string Dump() {
         std::ostringstream buf;
-        buf << "output=" << output
-            << ",intermediate=" << intermediate
-            << ",queue=" << string
-            << ",original=" << original;
+        buf << "output=" << output << ",intermediate=" << intermediate
+            << ",queue=" << string << ",original=" << original;
         return buf.str();
     }
 };
@@ -61,7 +56,7 @@ int main() {
 
     root.Add("a", SKKTrie("あ", "ア", "ｱ", ""));
     root.Add("kya", SKKTrie("きゃ", "キャ", "ｷｬ", ""));
-    root.Add("ka",  SKKTrie("か", "カ", "ｶ", ""));
+    root.Add("ka", SKKTrie("か", "カ", "ｶ", ""));
     root.Add("n", SKKTrie("ん", "ン", "ﾝ", ""));
     root.Add("nn", SKKTrie("ん", "ン", "ﾝ", ""));
     root.Add("xx", SKKTrie("っ", "ッ", "ｯ", "x"));

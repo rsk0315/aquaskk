@@ -22,22 +22,20 @@
 
 #include "SKKDistributedUserDictionary.h"
 #include "SKKCandidateSuite.h"
-#include "utf8util.h"
 #include "stringutil.h"
-#include <iostream>
+#include "utf8util.h"
 #include <cerrno>
+#include <cstdlib>
 #include <cstring>
 #include <ctime>
-#include <cstdlib>
+#include <iostream>
 
 namespace {
     class basic_request {
         std::vector<std::string> request_;
 
     protected:
-        void add_param(const std::string& param) {
-            request_.push_back(param);
-        }
+        void add_param(const std::string& param) { request_.push_back(param); }
 
     public:
         bool send(std::iostream& stream) {
@@ -71,7 +69,10 @@ namespace {
 
     class update_request : public basic_request {
     protected:
-        update_request(const std::string& command, const SKKEntry& entry, const SKKCandidate& candidate) {
+        update_request(
+            const std::string& command, const SKKEntry& entry,
+            const SKKCandidate& candidate
+        ) {
             SKKCandidate tmp(candidate);
 
             tmp.Encode();
@@ -112,25 +113,25 @@ namespace {
             return *this;
         }
 
-        operator bool() {
-            return splitter_;
-        }
+        operator bool() { return splitter_; }
     };
-}
+} // namespace
 
 void SKKDistributedUserDictionary::Initialize(const std::string& path) {
     server_.close();
     server_.open("localhost", atoi(path.c_str()));
 }
 
-void SKKDistributedUserDictionary::Find(const SKKEntry& entry, SKKCandidateSuite& result) {
+void SKKDistributedUserDictionary::Find(
+    const SKKEntry& entry, SKKCandidateSuite& result
+) {
     get_request request(entry);
 
-    if(request.send(server_)) {
+    if (request.send(server_)) {
         response response(server_);
         std::string buf;
 
-        while(response >> buf) {
+        while (response >> buf) {
             SKKCandidate candidate(buf);
 
             candidate.Decode();
@@ -140,7 +141,8 @@ void SKKDistributedUserDictionary::Find(const SKKEntry& entry, SKKCandidateSuite
     }
 }
 
-std::string SKKDistributedUserDictionary::ReverseLookup(const std::string& candidate) {
+std::string
+SKKDistributedUserDictionary::ReverseLookup(const std::string& candidate) {
     // 今のところサポートしない
     return "";
 }
@@ -148,28 +150,32 @@ std::string SKKDistributedUserDictionary::ReverseLookup(const std::string& candi
 void SKKDistributedUserDictionary::Complete(SKKCompletionHelper& helper) {
     complete_request request(helper.Entry());
 
-    if(request.send(server_)) {
+    if (request.send(server_)) {
         response response(server_);
         std::string buf;
 
-        while(response >> buf && helper.CanContinue()) {
+        while (response >> buf && helper.CanContinue()) {
             helper.Add(buf);
         }
     }
 }
 
-void SKKDistributedUserDictionary::Register(const SKKEntry& entry, const SKKCandidate& candidate) {
+void SKKDistributedUserDictionary::Register(
+    const SKKEntry& entry, const SKKCandidate& candidate
+) {
     put_request request(entry, candidate);
 
-    if(!request.send(server_)) {
+    if (!request.send(server_)) {
         std::cerr << "SKKDistributedUserDictionary: put failed" << std::endl;
     }
 }
 
-void SKKDistributedUserDictionary::Remove(const SKKEntry& entry, const SKKCandidate& candidate) {
+void SKKDistributedUserDictionary::Remove(
+    const SKKEntry& entry, const SKKCandidate& candidate
+) {
     delete_request request(entry, candidate);
 
-    if(!request.send(server_)) {
+    if (!request.send(server_)) {
         std::cerr << "SKKDistributedUserDictionary: delete failed" << std::endl;
     }
 }

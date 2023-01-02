@@ -1,26 +1,20 @@
-#include <cassert>
-#include "SKKCompleter.h"
 #include "SKKBackEnd.h"
+#include "SKKCompleter.h"
+#include <cassert>
 
 class TestBuddy : public SKKCompleterBuddy {
     std::string query_;
 
-    virtual const std::string SKKCompleterQueryString() {
-	return query_;
-    }
+    virtual const std::string SKKCompleterQueryString() { return query_; }
 
     virtual void SKKCompleterUpdate(const std::string& entry) {
-	query_ = entry;
+        query_ = entry;
     }
 
 public:
-    void SetQuery(const std::string& str) {
-	query_ = str;
-    }
+    void SetQuery(const std::string& str) { query_ = str; }
 
-    const std::string& Entry() const {
-	return query_;
-    }
+    const std::string& Entry() const { return query_; }
 };
 
 int main() {

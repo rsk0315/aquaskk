@@ -1,13 +1,13 @@
+#include "SKKRomanKanaConverter.h"
 #include <cassert>
 #include <iostream>
-#include "SKKRomanKanaConverter.h"
 
-void dump(const std::string& input, const SKKRomanKanaConversionResult& result) {
-    std::cerr << "input=" << input
-              << ",next=" << result.next
+void dump(
+    const std::string& input, const SKKRomanKanaConversionResult& result
+) {
+    std::cerr << "input=" << input << ",next=" << result.next
               << ",output=" << result.output
-              << ",intermediate=" << result.intermediate
-              << std::endl;
+              << ",intermediate=" << result.intermediate << std::endl;
 }
 
 int main() {

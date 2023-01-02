@@ -24,8 +24,8 @@
 #define SKKEntryRemoveEditor_h
 
 #include "SKKBaseEditor.h"
-#include "SKKEntry.h"
 #include "SKKCandidate.h"
+#include "SKKEntry.h"
 
 class SKKEntryRemoveEditor : public SKKBaseEditor {
     std::string input_;
@@ -39,7 +39,8 @@ public:
     virtual void ReadContext();
     virtual void WriteContext();
     virtual void Input(const std::string& ascii);
-    virtual void Input(const std::string& fixed, const std::string& input, char code);
+    virtual void
+    Input(const std::string& fixed, const std::string& input, char code);
     virtual void Input(Event event);
     virtual void Commit(std::string& queue);
 };

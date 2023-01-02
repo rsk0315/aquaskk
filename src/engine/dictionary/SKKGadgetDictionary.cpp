@@ -20,13 +20,13 @@
 
 */
 
-#include <stdexcept>
-#include <algorithm>
-#include <ctime>
-#include "calculator.h"
+#include "SKKGadgetDictionary.h"
 #include "SKKCandidate.h"
 #include "SKKCandidateSuite.h"
-#include "SKKGadgetDictionary.h"
+#include "calculator.h"
+#include <algorithm>
+#include <ctime>
+#include <stdexcept>
 
 namespace {
     // ======================================================================
@@ -56,10 +56,12 @@ namespace {
     // 現在日付
     void today(const std::string& entry, std::vector<std::string>& result) {
         tm now = current_datetime();
-        const char* weekday[] = { "日", "月", "火", "水", "木", "金", "土" };
+        const char* weekday[] = {"日", "月", "火", "水", "木", "金", "土"};
 
         result.push_back(format_date("%Y/%m/%d(%a)", now));
-        result.push_back(format_date("%Y 年 %m 月 %d 日(", now) + weekday[now.tm_wday] + ")");
+        result.push_back(
+            format_date("%Y 年 %m 月 %d 日(", now) + weekday[now.tm_wday] + ")"
+        );
     }
 
     // 現在時刻
@@ -74,8 +76,7 @@ namespace {
     //
     // jdate:yyyy
     //
-    void jdate(const std::string& entry, std::vector<std::string>& result) {
-    }
+    void jdate(const std::string& entry, std::vector<std::string>& result) {}
 
     // 簡易計算
     //
@@ -88,12 +89,11 @@ namespace {
         try {
             buf << calc.run(entry.substr(1));
             result.push_back(buf.str());
-        } catch(const std::logic_error& ex) {
+        } catch (const std::logic_error& ex) {
             result.push_back(ex.what());
-        } catch(...) {
-        }
+        } catch (...) {}
     }
-}
+} // namespace
 
 // ハンドラー選択ファンクタ
 struct SKKGadgetDictionary::Match {
@@ -126,8 +126,8 @@ struct SKKGadgetDictionary::Comp {
     Comp(const std::string& entry) : entry_(entry) {}
 
     bool operator()(const DispatchPair& pair) const {
-        return entry_.compare(0, entry_.size(), pair.first,
-                              0, entry_.size()) == 0;
+        return entry_.compare(0, entry_.size(), pair.first, 0, entry_.size()) ==
+               0;
     }
 };
 
@@ -149,18 +149,22 @@ void SKKGadgetDictionary::Initialize(const std::string& location) {
     table_.push_back(std::make_pair("=", calculate));
 }
 
-void SKKGadgetDictionary::Find(const SKKEntry& entry, SKKCandidateSuite& result) {
+void SKKGadgetDictionary::Find(
+    const SKKEntry& entry, SKKCandidateSuite& result
+) {
     // 今のところ「送りあり」のサポートはなし
-    if(entry.IsOkuriAri()) return;
-    
+    if (entry.IsOkuriAri())
+        return;
+
     std::vector<std::string> tmp;
     const std::string& key = entry.EntryString();
 
     apply(Match(key), Search(key, tmp));
 
-    if(tmp.empty()) return;
+    if (tmp.empty())
+        return;
 
-    for(unsigned index = 0; index < tmp.size(); ++ index) {
+    for (unsigned index = 0; index < tmp.size(); ++index) {
         SKKCandidate cand(tmp[index]);
         cand.SetAvoidStudy();
         result.Add(cand);

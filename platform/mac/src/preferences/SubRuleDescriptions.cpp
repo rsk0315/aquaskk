@@ -22,21 +22,21 @@
 
 #include "SubRuleDescriptions.h"
 #include <fstream>
-#include <sstream>
 #include <iostream>
+#include <sstream>
 
 SubRuleDescriptions::SubRuleDescriptions(const char* folder) {
     std::string path(std::string(folder) + "/sub-rule.desc");
     std::ifstream ifs(path.c_str());
     std::string line;
 
-    while(std::getline(ifs, line)) {
+    while (std::getline(ifs, line)) {
         add(line);
     }
 }
 
 const char* SubRuleDescriptions::Description(const char* rule_path) {
-    if(description_.find(rule_path) != description_.end()) {
+    if (description_.find(rule_path) != description_.end()) {
         return description_[rule_path].c_str();
     }
 
@@ -44,7 +44,7 @@ const char* SubRuleDescriptions::Description(const char* rule_path) {
 }
 
 const char* SubRuleDescriptions::Keymap(const char* rule_path) {
-    if(keymap_.find(rule_path) != keymap_.end()) {
+    if (keymap_.find(rule_path) != keymap_.end()) {
         return keymap_[rule_path].c_str();
     }
 
@@ -54,15 +54,16 @@ const char* SubRuleDescriptions::Keymap(const char* rule_path) {
 // ----------------------------------------------------------------------
 
 void SubRuleDescriptions::add(const std::string& line) {
-    if(line.empty() || line[0] == '#') return;
+    if (line.empty() || line[0] == '#')
+        return;
 
     std::istringstream buf(line);
     std::string path;
     std::string keymap;
     std::string description;
 
-    if(buf >> path >> keymap) {
-        if(buf >> description) {
+    if (buf >> path >> keymap) {
+        if (buf >> description) {
             keymap_[path] = keymap;
             description_[path] = description;
         } else {

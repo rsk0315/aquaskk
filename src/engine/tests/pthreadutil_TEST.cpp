@@ -1,7 +1,7 @@
 #include "pthreadutil.h"
-#include <string>
 #include <iostream>
 #include <sstream>
+#include <string>
 #include <unistd.h>
 
 class debugtask : public pthread::task {
@@ -17,13 +17,13 @@ public:
         pthread::lock scope(mutex_);
         std::cerr << "delete: " << str_ << std::endl;
     }
-    
+
     virtual bool run() {
-        for(int index = 0; index < loop_; ++ index) {
+        for (int index = 0; index < loop_; ++index) {
             do {
                 pthread::lock scope(mutex_);
                 std::cerr << "run :" << str_ << std::endl;
-            } while(0);
+            } while (0);
 
             sleep(1);
         }

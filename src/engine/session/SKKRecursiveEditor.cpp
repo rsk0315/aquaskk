@@ -21,23 +21,20 @@
 */
 
 #include "SKKRecursiveEditor.h"
-#include "SKKInputSessionParameter.h"
-#include "SKKInputContext.h"
-#include "SKKConfig.h"
 #include "SKKAnnotator.h"
-#include "SKKCandidateWindow.h"
-#include "SKKDynamicCompletor.h"
 #include "SKKBackEnd.h"
+#include "SKKCandidateWindow.h"
+#include "SKKConfig.h"
+#include "SKKDynamicCompletor.h"
+#include "SKKInputContext.h"
+#include "SKKInputSessionParameter.h"
 #include "utf8util.h"
 
 SKKRecursiveEditor::SKKRecursiveEditor(SKKInputEnvironment* env)
-    : env_(env)
-    , context_(env->InputContext())
-    , config_(env->Config())
-    , annotator_(env->InputSessionParameter()->Annotator())
-    , completor_(env->InputSessionParameter()->DynamicCompletor())
-    , editor_(env)
-    , state_(SKKState(env, &editor_)) {
+    : env_(env), context_(env->InputContext()), config_(env->Config()),
+      annotator_(env->InputSessionParameter()->Annotator()),
+      completor_(env->InputSessionParameter()->DynamicCompletor()),
+      editor_(env), state_(SKKState(env, &editor_)) {
     // initialize widgets
     widgets_.push_back(annotator_);
     widgets_.push_back(completor_);
@@ -45,9 +42,7 @@ SKKRecursiveEditor::SKKRecursiveEditor(SKKInputEnvironment* env)
     widgets_.push_back(env->InputModeSelector());
 }
 
-SKKRecursiveEditor::~SKKRecursiveEditor() {
-    forEachWidget(&SKKWidget::Hide);
-}
+SKKRecursiveEditor::~SKKRecursiveEditor() { forEachWidget(&SKKWidget::Hide); }
 
 void SKKRecursiveEditor::Input(const SKKEvent& event) {
     state_.Dispatch(SKKStateMachine::Event(event.id, event));
@@ -62,13 +57,9 @@ void SKKRecursiveEditor::Output() {
     annotate();
 }
 
-void SKKRecursiveEditor::Activate() {
-    forEachWidget(&SKKWidget::Activate);
-}
+void SKKRecursiveEditor::Activate() { forEachWidget(&SKKWidget::Activate); }
 
-void SKKRecursiveEditor::Deactivate() {
-    forEachWidget(&SKKWidget::Deactivate);
-}
+void SKKRecursiveEditor::Deactivate() { forEachWidget(&SKKWidget::Deactivate); }
 
 bool SKKRecursiveEditor::IsChildOf(SKKStateMachine::Handler handler) {
     return state_.IsChildOf(handler);
@@ -81,23 +72,25 @@ void SKKRecursiveEditor::forEachWidget(WidgetMethod method) {
 }
 
 void SKKRecursiveEditor::complete() {
-    if(context_->dynamic_completion && config_->EnableDynamicCompletion()) {
+    if (context_->dynamic_completion && config_->EnableDynamicCompletion()) {
         SKKEntry entry = context_->entry;
         std::string joined;
         std::string common_prefix;
 
-        if(!entry.IsEmpty() && !entry.IsOkuriAri()) {
+        if (!entry.IsEmpty() && !entry.IsOkuriAri()) {
             std::vector<std::string> result;
             unsigned range = config_->DynamicCompletionRange();
             std::string key = entry.EntryString();
 
-            if(range && SKKBackEnd::theInstance().Complete(key, result, range)) {
+            if (range &&
+                SKKBackEnd::theInstance().Complete(key, result, range)) {
                 int limit = std::min((unsigned)result.size(), range);
                 common_prefix = result[0];
 
-                for(int i = 0; i < limit; ++ i) {
-                    common_prefix = utf8::common_prefix(common_prefix, result[i]);
-            
+                for (int i = 0; i < limit; ++i) {
+                    common_prefix =
+                        utf8::common_prefix(common_prefix, result[i]);
+
                     joined += result[i];
                     joined += "\n";
                 }
@@ -106,7 +99,9 @@ void SKKRecursiveEditor::complete() {
             }
         }
 
-        completor_->Update(joined, utf8::length(common_prefix), context_->output.GetMark());
+        completor_->Update(
+            joined, utf8::length(common_prefix), context_->output.GetMark()
+        );
         completor_->Show();
     } else {
         completor_->Hide();
@@ -114,7 +109,7 @@ void SKKRecursiveEditor::complete() {
 }
 
 void SKKRecursiveEditor::annotate() {
-    if(context_->annotation && config_->EnableAnnotation()) {
+    if (context_->annotation && config_->EnableAnnotation()) {
         SKKCandidate candidate = context_->candidate;
 
         annotator_->Update(candidate, context_->output.GetMark());

@@ -46,7 +46,8 @@ public:
 
     virtual void ReadContext();
     virtual void WriteContext();
-    virtual void Input(const std::string& fixed, const std::string& input, char code);
+    virtual void
+    Input(const std::string& fixed, const std::string& input, char code);
     virtual void Input(SKKBaseEditor::Event event);
     virtual void Commit(std::string& queue);
 

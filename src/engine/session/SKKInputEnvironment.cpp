@@ -22,23 +22,15 @@
 
 #include "SKKInputEnvironment.h"
 
-SKKInputEnvironment::SKKInputEnvironment(SKKInputContext* context,
-                                         SKKInputSessionParameter* param,
-                                         SKKInputModeListenerCollection* listeners,
-                                         SKKBaseEditor* bottom)
-    : context_(context)
-    , param_(param)
-    , selector_(listeners)
-    , bottom_(bottom)
-{}
+SKKInputEnvironment::SKKInputEnvironment(
+    SKKInputContext* context, SKKInputSessionParameter* param,
+    SKKInputModeListenerCollection* listeners, SKKBaseEditor* bottom
+)
+    : context_(context), param_(param), selector_(listeners), bottom_(bottom) {}
 
-SKKConfig* SKKInputEnvironment::Config() {
-    return param_->Config();
-}
+SKKConfig* SKKInputEnvironment::Config() { return param_->Config(); }
 
-SKKInputContext* SKKInputEnvironment::InputContext() {
-    return context_;
-}
+SKKInputContext* SKKInputEnvironment::InputContext() { return context_; }
 
 SKKInputSessionParameter* SKKInputEnvironment::InputSessionParameter() {
     return param_;
@@ -48,6 +40,4 @@ SKKInputModeSelector* SKKInputEnvironment::InputModeSelector() {
     return &selector_;
 }
 
-SKKBaseEditor* SKKInputEnvironment::BaseEditor() {
-    return bottom_.get();
-}
+SKKBaseEditor* SKKInputEnvironment::BaseEditor() { return bottom_.get(); }

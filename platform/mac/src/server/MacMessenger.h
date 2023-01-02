@@ -23,8 +23,8 @@
 #ifndef MacMessenger_h
 #define MacMessenger_h
 
-#include "SKKMessenger.h"
 #include "SKKLayoutManager.h"
+#include "SKKMessenger.h"
 
 class MacMessenger : public SKKMessenger {
     SKKLayoutManager* layout_;

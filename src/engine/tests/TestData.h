@@ -34,18 +34,18 @@ class TestData {
         splitter.split(event);
         splitter >> key;
 
-        while(splitter >> str) {
+        while (splitter >> str) {
             string::splitter sub;
             sub.split(str, "=");
 
             std::string opt;
             std::string value;
-            
-            if(sub >> opt >> value) {
-                if(opt == "sel") {
+
+            if (sub >> opt >> value) {
+                if (opt == "sel") {
                     result.selection = value;
                 }
-                if(opt == "yank") {
+                if (opt == "yank") {
                     result.yank = value;
                 }
             }
@@ -53,11 +53,15 @@ class TestData {
 
         splitter.split(key, "::");
 
-        while(splitter >> str) {
-            if(str == "shift") result.mods |= SKKKeyState::SHIFT;
-            if(str == "ctrl") result.mods |= SKKKeyState::CTRL;
-            if(str == "alt") result.mods |= SKKKeyState::ALT;
-            if(str == "meta") result.mods |= SKKKeyState::META;
+        while (splitter >> str) {
+            if (str == "shift")
+                result.mods |= SKKKeyState::SHIFT;
+            if (str == "ctrl")
+                result.mods |= SKKKeyState::CTRL;
+            if (str == "alt")
+                result.mods |= SKKKeyState::ALT;
+            if (str == "meta")
+                result.mods |= SKKKeyState::META;
         }
 
         result.code = charcode(str);
@@ -66,11 +70,16 @@ class TestData {
     }
 
     SKKInputMode inputMode(const std::string& mode) {
-        if(mode == "J") return HirakanaInputMode;
-        if(mode == "K") return KatakanaInputMode;
-        if(mode == "Q") return Jisx0201KanaInputMode;
-        if(mode == "A") return AsciiInputMode;
-        if(mode == "L") return Jisx0208LatinInputMode;
+        if (mode == "J")
+            return HirakanaInputMode;
+        if (mode == "K")
+            return KatakanaInputMode;
+        if (mode == "Q")
+            return Jisx0201KanaInputMode;
+        if (mode == "A")
+            return AsciiInputMode;
+        if (mode == "L")
+            return Jisx0208LatinInputMode;
 
         return InvalidInputMode;
     }
@@ -79,7 +88,7 @@ class TestData {
         char result;
         std::istringstream buf(str);
 
-        if(str.find("0x") == 0) {
+        if (str.find("0x") == 0) {
             int tmp;
             buf >> std::hex >> tmp;
             result = tmp;
@@ -106,25 +115,32 @@ class TestData {
 
         splitter.split(expected, ",");
 
-        while(splitter >> str) {
+        while (splitter >> str) {
             string::splitter entry;
             std::string key;
             std::string value;
 
             entry.split(str, "=");
-            if(entry >> key >> value) {
-                if(key == "fixed") result.fixed = value;
-                if(key == "marked") result.marked = decode(value);
-                if(key == "mode") result.mode = inputMode(value);
-                if(key == "pos") result.pos = integer(value);
-                if(key == "ret") result.ret = (integer(value) == 1);
+            if (entry >> key >> value) {
+                if (key == "fixed")
+                    result.fixed = value;
+                if (key == "marked")
+                    result.marked = decode(value);
+                if (key == "mode")
+                    result.mode = inputMode(value);
+                if (key == "pos")
+                    result.pos = integer(value);
+                if (key == "ret")
+                    result.ret = (integer(value) == 1);
             }
         }
 
         return result;
     }
 
-    TestEntry makeTestEntry(int line, const std::string& event, const std::string& expected) {
+    TestEntry makeTestEntry(
+        int line, const std::string& event, const std::string& expected
+    ) {
         TestEntry result;
 
         result.line = line;
@@ -141,8 +157,8 @@ public:
         string::splitter splitter;
         int num = 0;
 
-        while(std::getline(ifs, line)) {
-            ++ num;
+        while (std::getline(ifs, line)) {
+            ++num;
 
             std::string event;
             std::string result;
@@ -150,8 +166,9 @@ public:
             splitter.split(line, " ");
             splitter >> event >> result;
 
-            if(event.empty() || event[0] == '#') continue;
-            
+            if (event.empty() || event[0] == '#')
+                continue;
+
             tests_.push_back(makeTestEntry(num, event, result));
         }
 
@@ -159,8 +176,8 @@ public:
     }
 
     bool operator>>(TestEntry& entry) {
-        if(current_ < tests_.size()) {
-            entry = tests_[current_ ++];
+        if (current_ < tests_.size()) {
+            entry = tests_[current_++];
             return true;
         }
 

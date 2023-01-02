@@ -21,8 +21,8 @@
 
 */
 
-#include <pthread.h>
 #include "socketutil.h"
+#include <pthread.h>
 
 class skkserv {
     pthread_t thread_;

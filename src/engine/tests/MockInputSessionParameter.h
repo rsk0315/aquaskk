@@ -3,14 +3,14 @@
 #ifndef MockInputSessionParameter_h
 #define MockInputSessionParameter_h
 
-#include "SKKInputSessionParameter.h"
+#include "MockAnnotator.h"
+#include "MockCandidateWindow.h"
+#include "MockClipboard.h"
 #include "MockConfig.h"
+#include "MockDynamicCompletor.h"
 #include "MockFrontEnd.h"
 #include "MockMessenger.h"
-#include "MockClipboard.h"
-#include "MockCandidateWindow.h"
-#include "MockAnnotator.h"
-#include "MockDynamicCompletor.h"
+#include "SKKInputSessionParameter.h"
 
 class MockInputSessionParameter : public SKKInputSessionParameter {
     MockConfig config_;
@@ -23,7 +23,7 @@ class MockInputSessionParameter : public SKKInputSessionParameter {
 
 public:
     MockInputSessionParameter() : frontend_(new MockFrontEnd()) {}
-    
+
     virtual SKKConfig* Config() { return &config_; }
     virtual SKKFrontEnd* FrontEnd() { return frontend_; }
     virtual SKKMessenger* Messenger() { return &messenger_; }
@@ -34,7 +34,9 @@ public:
 
     SKKInputModeListener* Listener() { return frontend_; }
     TestResult& Result() { return *frontend_; }
-    void SetSelectedString(const std::string& str) { frontend_->SetSelectedString(str); }
+    void SetSelectedString(const std::string& str) {
+        frontend_->SetSelectedString(str);
+    }
     void SetYankString(const std::string& str) { clipboard_.SetString(str); }
 };
 

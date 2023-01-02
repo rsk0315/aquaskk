@@ -1,5 +1,5 @@
-#include <cassert>
 #include "SKKCommonDictionary.h"
+#include <cassert>
 
 void test(SKKBaseDictionary& dict) {
     SKKCandidateSuite suite;
@@ -26,7 +26,7 @@ int main() {
     dict.Initialize("SKK-JISYO.TEST");
 
     test(dict);
- 
+
     SKKCommonDictionaryUTF8 utf8;
 
     utf8.Initialize("SKK-JISYO.TEST.UTF8");

@@ -29,7 +29,7 @@ SKKComposingEditor::SKKComposingEditor(SKKInputContext* context)
 void SKKComposingEditor::ReadContext() {
     composing_.Clear();
 
-    if(context()->entry.IsEmpty()) {
+    if (context()->entry.IsEmpty()) {
         // 直接入力モードからの遷移
         composing_.Insert(context()->undo.Entry());
     } else {
@@ -43,7 +43,9 @@ void SKKComposingEditor::ReadContext() {
 
 void SKKComposingEditor::WriteContext() {
     context()->output.SetMark();
-    context()->output.Compose("▽" + composing_.String(), composing_.CursorPosition());
+    context()->output.Compose(
+        "▽" + composing_.String(), composing_.CursorPosition()
+    );
 
     update();
 }
@@ -54,14 +56,16 @@ void SKKComposingEditor::Input(const std::string& ascii) {
     update();
 }
 
-void SKKComposingEditor::Input(const std::string& fixed, const std::string&, char) {
+void SKKComposingEditor::Input(
+    const std::string& fixed, const std::string&, char
+) {
     Input(fixed);
 }
 
 void SKKComposingEditor::Input(SKKBaseEditor::Event event) {
-    switch(event) {
+    switch (event) {
     case BackSpace:
-        if(composing_.IsEmpty()) {
+        if (composing_.IsEmpty()) {
             context()->needs_setback = true;
         }
         composing_.BackSpace();
@@ -74,11 +78,11 @@ void SKKComposingEditor::Input(SKKBaseEditor::Event event) {
     case CursorLeft:
         composing_.CursorLeft();
         break;
-        
+
     case CursorRight:
         composing_.CursorRight();
         break;
-        
+
     case CursorUp:
         composing_.CursorUp();
         break;

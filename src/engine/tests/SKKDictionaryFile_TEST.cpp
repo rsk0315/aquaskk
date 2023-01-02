@@ -1,5 +1,5 @@
-#include <cassert>
 #include "SKKDictionaryFile.h"
+#include <cassert>
 
 int main() {
     SKKDictionaryEntryContainer okuriAri;

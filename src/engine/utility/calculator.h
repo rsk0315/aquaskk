@@ -23,23 +23,23 @@
 #ifndef calculator_h
 #define calculator_h
 
+#include <cmath>
 #include <sstream>
 #include <stdexcept>
-#include <cmath>
 
 /*
 
 expression	= term { ('+' | '-') term }
-    		;
+                ;
 
 term		= primary { ('*' | '/' | '%' ) primary }
-    		;
+                ;
 
 primary		= [ '+' | '-' ] number | '(' expression ')'
-		;
+                ;
 
 number		=  floating-point-literal
-		;
+                ;
 
 */
 
@@ -58,20 +58,34 @@ namespace calculator {
         token get_token() {
             token result;
 
-            if(buf_.kind != 0) {
+            if (buf_.kind != 0) {
                 result = buf_;
                 buf_.kind = 0;
                 return result;
             }
 
-            if(input_ >> result.kind) {
-                switch(result.kind) {
-                case '(': case ')': case '+': case '-': case '*': case '/': case '%':
+            if (input_ >> result.kind) {
+                switch (result.kind) {
+                case '(':
+                case ')':
+                case '+':
+                case '-':
+                case '*':
+                case '/':
+                case '%':
                     return result;
 
                 case '.':
-                case '0': case '1': case '2': case '3': case '4':
-                case '5': case '6': case '7': case '8': case '9':
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
                     input_.putback(result.kind);
                     input_ >> result.value;
                     result.kind = '#';
@@ -79,23 +93,21 @@ namespace calculator {
                     return result;
 
                 default:
-                    throw std::runtime_error("計算エラー:不正な文字です"); 
+                    throw std::runtime_error("計算エラー:不正な文字です");
                 }
             }
 
-            return result;      // EOF
+            return result; // EOF
         }
 
-        void save_token(const token& token) {
-            buf_ = token;
-        }
+        void save_token(const token& token) { buf_ = token; }
 
         double expression() {
             double left = term();
             token token = get_token();
 
-            while(true) {
-                switch(token.kind) {
+            while (true) {
+                switch (token.kind) {
                 case '+':
                     left += term();
                     break;
@@ -117,14 +129,14 @@ namespace calculator {
             double left = primary();
             token token = get_token();
 
-            while(true) {
-                switch(token.kind) {
+            while (true) {
+                switch (token.kind) {
                 case '*':
                     left *= primary();
                     break;
 
                 case '/':
-                    if(double divisor = primary()) {
+                    if (double divisor = primary()) {
                         left /= divisor;
                     } else {
                         throw std::logic_error("計算エラー:ゼロ除算です");
@@ -148,26 +160,28 @@ namespace calculator {
             token token = get_token();
 
             // group
-            if(token.kind == '(') {
+            if (token.kind == '(') {
                 double val = expression();
 
                 token = get_token();
-                if(token.kind != ')') {
-                    throw std::logic_error("計算エラー:')'が見つかりませんでした");
+                if (token.kind != ')') {
+                    throw std::logic_error(
+                        "計算エラー:')'が見つかりませんでした"
+                    );
                 }
 
                 return val;
             }
 
-            if(token.kind == '#') {
+            if (token.kind == '#') {
                 return token.value;
             }
 
-            if(token.kind == '-') {
-                return - primary();
+            if (token.kind == '-') {
+                return -primary();
             }
 
-            if(token.kind == '+') {
+            if (token.kind == '+') {
                 return primary();
             }
 
@@ -183,6 +197,6 @@ namespace calculator {
             return expression();
         }
     };
-}
+} // namespace calculator
 
 #endif

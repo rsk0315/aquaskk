@@ -26,15 +26,15 @@
 State SKKState::EntryRemove(const Event& event) {
     const SKKEvent& param = event.Param();
 
-    switch(event) {
+    switch (event) {
     case ENTRY_EVENT:
         editor_->SetStateEntryRemove();
-	return 0;
+        return 0;
 
     case SKK_ENTER:
         editor_->Commit();
 
-        if(!context_->needs_setback) {
+        if (!context_->needs_setback) {
             messenger_->SendMessage("単語を削除しました");
             return State::Transition(&SKKState::KanaInput);
         }
@@ -49,7 +49,7 @@ State SKKState::EntryRemove(const Event& event) {
         return 0;
 
     case SKK_CHAR:
-        if(param.IsInputChars()) {
+        if (param.IsInputChars()) {
             // 入力文字は ASCII で受け付ける(常に非変換)
             editor_->HandleChar(param.code, true);
             return 0;

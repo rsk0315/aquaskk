@@ -20,15 +20,13 @@
 
 */
 
-#include <sstream>
 #include "SKKProxyDictionary.h"
 #include "jconv.h"
+#include <sstream>
 
 SKKProxyDictionary::SKKProxyDictionary() : active_(false) {}
 
-SKKProxyDictionary::~SKKProxyDictionary() {
-    session_.close();
-}
+SKKProxyDictionary::~SKKProxyDictionary() { session_.close(); }
 
 void SKKProxyDictionary::Initialize(const std::string& location) {
     remote_.parse(location, "1178");
@@ -36,12 +34,14 @@ void SKKProxyDictionary::Initialize(const std::string& location) {
     session_.close();
 }
 
-void SKKProxyDictionary::Find(const SKKEntry& entry, SKKCandidateSuite& result) {
+void SKKProxyDictionary::Find(
+    const SKKEntry& entry, SKKCandidateSuite& result
+) {
     // 再入でループするのを防ぐ
-    if(!active_) {
+    if (!active_) {
         active_ = true;
 
-        if(connect() && send(entry) && ready()) {
+        if (connect() && send(entry) && ready()) {
             recv(result);
         }
 
@@ -52,7 +52,7 @@ void SKKProxyDictionary::Find(const SKKEntry& entry, SKKCandidateSuite& result) 
 // ----------------------------------------------------------------------
 
 bool SKKProxyDictionary::connect() {
-    if(!session_) {
+    if (!session_) {
         session_.open(remote_);
     }
 
@@ -60,9 +60,7 @@ bool SKKProxyDictionary::connect() {
 }
 
 bool SKKProxyDictionary::send(const SKKEntry& entry) {
-    session_ << '1'
-             << jconv::eucj_from_utf8(entry.EntryString())
-             << ' '
+    session_ << '1' << jconv::eucj_from_utf8(entry.EntryString()) << ' '
              << std::flush;
 
     return (bool)session_;
@@ -81,8 +79,8 @@ bool SKKProxyDictionary::ready() {
 void SKKProxyDictionary::recv(SKKCandidateSuite& result) {
     std::string response;
 
-    if(std::getline(session_, response).eof() ||
-       response.size() < 2 || response[0] != '1') {
+    if (std::getline(session_, response).eof() || response.size() < 2 ||
+        response[0] != '1') {
         return;
     }
 

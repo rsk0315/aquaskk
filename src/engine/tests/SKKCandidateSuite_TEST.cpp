@@ -34,13 +34,18 @@ void TestUpdate() {
 
     suite.Update(SKKCandidate("候補2;アノテーション"));
 
-    assert(suite.ToString() == "/候補2;アノテーション/候補1/[おくり/候補1/候補2/]/");
+    assert(
+        suite.ToString() == "/候補2;アノテーション/候補1/[おくり/候補1/候補2/]/"
+    );
 
     cand.clear();
     cand.push_back(SKKCandidate("候補1;アノテーション"));
 
     suite.Update(SKKOkuriHint("おくり", cand));
-    assert(suite.ToString() == "/候補1;アノテーション/候補2;アノテーション/[おくり/候補1;アノテーション/候補2/]/");
+    assert(
+        suite.ToString() == "/候補1;アノテーション/候補2;アノテーション/"
+                            "[おくり/候補1;アノテーション/候補2/]/"
+    );
 }
 
 struct pred : public std::unary_function<SKKCandidate, bool> {
@@ -57,13 +62,20 @@ void TestRemove() {
 
     suite.Parse("/合;(一致) 話が合う/当/[て/当/]/[って/合;(一致) 話が合う/]/");
     suite.Remove(key);
-    assert(suite.ToString() == "/合;(一致) 話が合う/[って/合;(一致) 話が合う/]/");
+    assert(
+        suite.ToString() == "/合;(一致) 話が合う/[って/合;(一致) 話が合う/]/"
+    );
 
     suite.Add(SKKCandidate("(skk-ignore-dic-word \"test\")"));
-    assert(suite.ToString() == "/合;(一致) 話が合う/(skk-ignore-dic-word \"test\")/[って/合;(一致) 話が合う/]/");
+    assert(
+        suite.ToString() == "/合;(一致) 話が合う/(skk-ignore-dic-word "
+                            "\"test\")/[って/合;(一致) 話が合う/]/"
+    );
 
     suite.RemoveIf(pred());
-    assert(suite.ToString() == "/合;(一致) 話が合う/[って/合;(一致) 話が合う/]/");
+    assert(
+        suite.ToString() == "/合;(一致) 話が合う/[って/合;(一致) 話が合う/]/"
+    );
 }
 
 int main() {

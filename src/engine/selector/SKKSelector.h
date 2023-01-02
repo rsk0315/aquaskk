@@ -23,10 +23,10 @@
 #ifndef SKKSelector_h
 #define SKKSelector_h
 
+#include "SKKCandidateSuite.h"
+#include "SKKEntry.h"
 #include "SKKInlineSelector.h"
 #include "SKKWindowSelector.h"
-#include "SKKEntry.h"
-#include "SKKCandidateSuite.h"
 #include "subrange.h"
 
 // SKKSelector の相棒クラス

@@ -23,26 +23,28 @@
 #include "SKKInlineSelector.h"
 #include <cassert>
 
-void SKKInlineSelector::Initialize(SKKCandidateContainer& container, unsigned inlineCount) {
+void SKKInlineSelector::Initialize(
+    SKKCandidateContainer& container, unsigned inlineCount
+) {
     range_.set(container, 0, inlineCount);
     pos_ = 0;
 }
 
 bool SKKInlineSelector::Next() {
-    if(IsEmpty() || pos_ == maxPosition()) {
-	return false;
+    if (IsEmpty() || pos_ == maxPosition()) {
+        return false;
     }
 
-    ++ pos_;
+    ++pos_;
     return true;
 }
 
 bool SKKInlineSelector::Prev() {
-    if(IsEmpty() || pos_ == minPosition()) {
-	return false;
+    if (IsEmpty() || pos_ == minPosition()) {
+        return false;
     }
 
-    -- pos_;
+    --pos_;
     return true;
 }
 
@@ -52,14 +54,8 @@ const SKKCandidate& SKKInlineSelector::Current() const {
     return range_[pos_];
 }
 
-bool SKKInlineSelector::IsEmpty() const {
-    return range_.empty();
-}
+bool SKKInlineSelector::IsEmpty() const { return range_.empty(); }
 
-int SKKInlineSelector::minPosition() const {
-    return 0;
-}
+int SKKInlineSelector::minPosition() const { return 0; }
 
-int SKKInlineSelector::maxPosition() const {
-    return range_.size() - 1;
-}
+int SKKInlineSelector::maxPosition() const { return range_.size() - 1; }

@@ -7,15 +7,11 @@
 
 class MockClipboard : public SKKClipboard {
     std::string str_;
-    
-    virtual const std::string PasteString() {
-        return str_;
-    }
+
+    virtual const std::string PasteString() { return str_; }
 
 public:
-    void SetString(const std::string& str) {
-        str_ = str;
-    }
+    void SetString(const std::string& str) { str_ = str; }
 };
 
 #endif

@@ -46,13 +46,13 @@ public:
     }
 
     void Activate() {
-        if(visible_) {
+        if (visible_) {
             SKKWidgetShow();
         }
     }
 
     void Deactivate() {
-        if(visible_) {
+        if (visible_) {
             SKKWidgetHide();
         }
     }

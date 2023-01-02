@@ -23,9 +23,9 @@
 #ifndef SKKRomanKanaConverter_h
 #define SKKRomanKanaConverter_h
 
-#include <string>
-#include "SKKTrie.h"
 #include "SKKInputMode.h"
+#include "SKKTrie.h"
+#include <string>
 
 // 変換結果
 struct SKKRomanKanaConversionResult {
@@ -59,7 +59,10 @@ public:
     // 戻り値：
     //	true=変換された、false=変換されなかった
     //
-    bool Convert(SKKInputMode mode, const std::string& str, SKKRomanKanaConversionResult& result);
+    bool Convert(
+        SKKInputMode mode, const std::string& str,
+        SKKRomanKanaConversionResult& result
+    );
 };
 
 #endif
