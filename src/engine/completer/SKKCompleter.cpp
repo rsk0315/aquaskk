@@ -26,15 +26,16 @@
 SKKCompleter::SKKCompleter(SKKCompleterBuddy* buddy) : buddy_(buddy) {}
 
 bool SKKCompleter::Execute(int limit) {
-    if(complete(limit)) {
-	notify();
+    if (complete(limit)) {
+        notify();
     }
 
     return !completions_.empty();
 }
 
 bool SKKCompleter::Remove() {
-    if(completions_.empty()) return false;
+    if (completions_.empty())
+        return false;
 
     SKKBackEnd& backend = SKKBackEnd::theInstance();
 
@@ -46,20 +47,22 @@ bool SKKCompleter::Remove() {
 }
 
 void SKKCompleter::Next() {
-    if(completions_.empty()) return;
+    if (completions_.empty())
+        return;
 
-    if(maxPosition() < ++ pos_) {
-	pos_ = minPosition();
+    if (maxPosition() < ++pos_) {
+        pos_ = minPosition();
     }
 
     notify();
 }
 
 void SKKCompleter::Prev() {
-    if(completions_.empty()) return;
+    if (completions_.empty())
+        return;
 
-    if(-- pos_ < minPosition()) {
-	pos_ = maxPosition();
+    if (--pos_ < minPosition()) {
+        pos_ = maxPosition();
     }
 
     notify();
@@ -74,14 +77,8 @@ bool SKKCompleter::complete(int limit) {
     return SKKBackEnd::theInstance().Complete(query, completions_, limit);
 }
 
-int SKKCompleter::minPosition() const {
-    return 0;
-}
+int SKKCompleter::minPosition() const { return 0; }
 
-int SKKCompleter::maxPosition() const {
-    return completions_.size() - 1;
-}
+int SKKCompleter::maxPosition() const { return completions_.size() - 1; }
 
-void SKKCompleter::notify() {
-    buddy_->SKKCompleterUpdate(completions_[pos_]);
-}
+void SKKCompleter::notify() { buddy_->SKKCompleterUpdate(completions_[pos_]); }

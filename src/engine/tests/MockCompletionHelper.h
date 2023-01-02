@@ -15,21 +15,15 @@ public:
         result_.clear();
     }
 
-    std::vector<std::string>& Result() {
-        return result_;
-    }
+    std::vector<std::string>& Result() { return result_; }
 
-    virtual const std::string& Entry() const {
-        return entry_;
-    }
+    virtual const std::string& Entry() const { return entry_; }
 
     virtual void Add(const std::string& completion) {
         result_.push_back(completion);
     }
 
-    virtual bool CanContinue() const {
-        return true;
-    }
+    virtual bool CanContinue() const { return true; }
 };
 
 #endif

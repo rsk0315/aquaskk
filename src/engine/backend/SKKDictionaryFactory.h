@@ -23,14 +23,15 @@
 #ifndef SKKDictionaryFactory_h
 #define SKKDictionaryFactory_h
 
-#include <string>
-#include <map>
 #include "SKKDictionaryKey.h"
+#include <map>
+#include <string>
 
 class SKKBaseDictionary;
 
 class SKKDictionaryFactory {
-    typedef SKKBaseDictionary* (*SKKDictionaryCreator)(const std::string& location);
+    typedef SKKBaseDictionary* (*SKKDictionaryCreator
+    )(const std::string& location);
 
     std::map<int, SKKDictionaryCreator> creators_;
 
@@ -58,14 +59,13 @@ public:
 // 具象辞書クラスをライブラリ化する場合には、明示的なインスタンス生成等
 // でオブジェクトファイルを強制的にロードする必要がある。
 //
-template <typename ConcreteDictionary>
-bool SKKRegisterFactoryMethod(int type) {
+template <typename ConcreteDictionary> bool SKKRegisterFactoryMethod(int type) {
     struct Factory {
-	static SKKBaseDictionary* Method(const std::string& location) {
-	    ConcreteDictionary* obj = new ConcreteDictionary();
-	    obj->Initialize(location);
-	    return obj;
-	}
+        static SKKBaseDictionary* Method(const std::string& location) {
+            ConcreteDictionary* obj = new ConcreteDictionary();
+            obj->Initialize(location);
+            return obj;
+        }
     };
 
     SKKDictionaryFactory::theInstance().Register(type, Factory::Method);

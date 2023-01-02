@@ -24,10 +24,10 @@
 #define SKKState_h
 
 #include "GenericStateMachine.h"
+#include "SKKCompleter.h"
+#include "SKKEvent.h"
 #include "SKKInputEnvironment.h"
 #include "SKKInputMode.h"
-#include "SKKEvent.h"
-#include "SKKCompleter.h"
 #include "SKKSelector.h"
 
 using namespace statemachinecxx_sourceforge_jp;
@@ -56,39 +56,39 @@ public:
     // level 1
     State Primary(const Event& event);
 
-        // level 2 (initial state)
-        State KanaInput(const Event& event);
+    // level 2 (initial state)
+    State KanaInput(const Event& event);
 
-	    // level 3 (sub of KanaInput)
-    	    State Hirakana(const Event& event);
-    	    State Katakana(const Event& event);
-    	    State Jisx0201Kana(const Event& event);
+    // level 3 (sub of KanaInput)
+    State Hirakana(const Event& event);
+    State Katakana(const Event& event);
+    State Jisx0201Kana(const Event& event);
 
-        // level 2 (sub of Direct)
-        State LatinInput(const Event& event);
+    // level 2 (sub of Direct)
+    State LatinInput(const Event& event);
 
-    	    // level 3 (sub of LatinInput)
-    	    State Ascii(const Event& event);
-    	    State Jisx0208Latin(const Event& event);
+    // level 3 (sub of LatinInput)
+    State Ascii(const Event& event);
+    State Jisx0208Latin(const Event& event);
 
     // level 1
     State Composing(const Event& event);
 
-	// level 2 (sub of Composing)
-	State Edit(const Event& event);
+    // level 2 (sub of Composing)
+    State Edit(const Event& event);
 
-	    // level 3 (sub of Edit)
-	    State EntryInput(const Event& event);
+    // level 3 (sub of Edit)
+    State EntryInput(const Event& event);
 
-		// lelvel 4 (sub of EntryInput)
-		State KanaEntry(const Event& event);
-		State AsciiEntry(const Event& event);
+    // lelvel 4 (sub of EntryInput)
+    State KanaEntry(const Event& event);
+    State AsciiEntry(const Event& event);
 
-	    // level 3 (sub of Edit)
-	    State EntryCompletion(const Event& event);
+    // level 3 (sub of Edit)
+    State EntryCompletion(const Event& event);
 
-	// level 2 (sub of Composing)
-	State SelectCandidate(const Event& event);
+    // level 2 (sub of Composing)
+    State SelectCandidate(const Event& event);
 
     // level 1
     State OkuriInput(const Event& event);
@@ -99,7 +99,8 @@ public:
     // level 1
     State RecursiveRegister(const Event& event);
 
-    static void ToString(const Handler handler, const Event& event, std::string& result);
+    static void
+    ToString(const Handler handler, const Event& event, std::string& result);
 };
 
 #endif

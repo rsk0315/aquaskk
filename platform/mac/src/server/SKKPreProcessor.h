@@ -23,8 +23,8 @@
 #ifndef SKKPreProcessor_h
 #define SKKPreProcessor_h
 
-#include <AppKit/AppKit.h>
 #include "SKKKeymap.h"
+#include <AppKit/AppKit.h>
 
 // キー入力前処理クラス
 class SKKPreProcessor {
@@ -35,7 +35,7 @@ class SKKPreProcessor {
     SKKPreProcessor& operator=(const SKKPreProcessor&);
 
 public:
-    // シングルトン    
+    // シングルトン
     static SKKPreProcessor& theInstance();
 
     // キーマップのロード

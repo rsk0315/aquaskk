@@ -23,14 +23,15 @@
 #ifndef SKKGadgetDictionary_h
 #define SKKGadgetDictionary_h
 
-#include <map>
 #include "SKKBaseDictionary.h"
+#include <map>
 
 // ======================================================================
 // プログラム実行変換辞書クラス
 // ======================================================================
 class SKKGadgetDictionary : public SKKBaseDictionary {
-    typedef void (*DispatchHandler)(const std::string&, std::vector<std::string>&);
+    typedef void (*DispatchHandler
+    )(const std::string&, std::vector<std::string>&);
     typedef std::pair<std::string, DispatchHandler> DispatchPair;
     typedef std::vector<DispatchPair> DispatchTable;
 
@@ -41,23 +42,23 @@ class SKKGadgetDictionary : public SKKBaseDictionary {
 
     DispatchTable table_;
 
-    DispatchTable selectHandlers(const std::string& entry, bool complete = false) const;
+    DispatchTable
+    selectHandlers(const std::string& entry, bool complete = false) const;
 
     template <typename Predicate, typename Func>
     void apply(Predicate pred, Func func) {
         DispatchTable::iterator first = table_.begin();
         DispatchTable::iterator last = table_.end();
 
-        while(first != last) {
-            if(pred(*first)) {
+        while (first != last) {
+            if (pred(*first)) {
                 func(*first);
             }
-            ++ first;
+            ++first;
         }
     }
 
 public:
-
     virtual void Initialize(const std::string& location);
 
     virtual void Find(const SKKEntry& entry, SKKCandidateSuite& result);

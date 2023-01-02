@@ -23,10 +23,10 @@
 #ifndef SKKInputModeSelector_h
 #define SKKInputModeSelector_h
 
-#include <vector>
-#include "SKKWidget.h"
 #include "SKKInputMode.h"
 #include "SKKInputModeListener.h"
+#include "SKKWidget.h"
+#include <vector>
 
 class SKKInputModeSelector : public SKKWidget {
     SKKInputModeListenerCollection* listeners_;

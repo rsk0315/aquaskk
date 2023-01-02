@@ -1,7 +1,7 @@
-#include "SKKNumericConverter.h"
 #include "SKKCandidate.h"
-#include <iostream>
+#include "SKKNumericConverter.h"
 #include <cassert>
+#include <iostream>
 
 int main() {
     SKKNumericConverter converter;
@@ -18,6 +18,6 @@ int main() {
     SKKCandidate candidate("#0-#1-#2-#3-#4-#5-#9");
     converter.Apply(candidate);
 
-    //std::cerr << candidate.Variant() << std::endl;
+    // std::cerr << candidate.Variant() << std::endl;
     assert(candidate.Variant() == "0-１-二-千二百三十四-4-壱阡弐百参拾四-３四");
 }

@@ -23,8 +23,8 @@
 #ifndef SKKAnnotator_h
 #define SKKAnnotator_h
 
-#include "SKKWidget.h"
 #include "SKKCandidate.h"
+#include "SKKWidget.h"
 
 class SKKAnnotator : public SKKWidget {
 public:

@@ -1,8 +1,8 @@
-#include <cassert>
-#include <iostream>
 #include "SKKEvent.h"
 #include "SKKKeyState.h"
 #include "SKKKeymapEntry.h"
+#include <cassert>
+#include <iostream>
 
 int main() {
     SKKKeymapEntry entry;

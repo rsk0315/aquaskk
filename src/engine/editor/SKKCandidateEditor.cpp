@@ -21,8 +21,8 @@
 */
 
 #include "SKKCandidateEditor.h"
-#include "SKKInputContext.h"
 #include "SKKBackEnd.h"
+#include "SKKInputContext.h"
 
 SKKCandidateEditor::SKKCandidateEditor(SKKInputContext* context)
     : SKKBaseEditor(context) {}
@@ -36,7 +36,7 @@ void SKKCandidateEditor::ReadContext() {
 void SKKCandidateEditor::WriteContext() {
     std::string str(candidate_.Variant());
 
-    if(entry_.IsOkuriAri()) {
+    if (entry_.IsOkuriAri()) {
         str += entry_.OkuriString();
     }
 
@@ -52,7 +52,7 @@ void SKKCandidateEditor::Commit(std::string& queue) {
     queue = candidate_.Variant();
     candidate_ = SKKCandidate();
 
-    if(entry_.IsOkuriAri()) {
+    if (entry_.IsOkuriAri()) {
         queue += entry_.OkuriString();
     }
 }

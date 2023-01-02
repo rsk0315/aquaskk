@@ -23,11 +23,11 @@
 #ifndef SKKInputContext_h
 #define SKKInputContext_h
 
-#include "SKKOutputBuffer.h"
-#include "SKKEntry.h"
 #include "SKKCandidate.h"
-#include "SKKUndoContext.h"
+#include "SKKEntry.h"
+#include "SKKOutputBuffer.h"
 #include "SKKRegistration.h"
+#include "SKKUndoContext.h"
 
 // 入力コンテキスト
 class SKKInputContext {

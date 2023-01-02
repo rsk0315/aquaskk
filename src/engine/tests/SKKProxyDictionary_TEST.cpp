@@ -1,8 +1,8 @@
+#include "SKKCommonDictionary.h"
+#include "SKKProxyDictionary.h"
+#include "jconv.h"
 #include <cassert>
 #include <errno.h>
-#include "SKKProxyDictionary.h"
-#include "SKKCommonDictionary.h"
-#include "jconv.h"
 
 void session(int fd, SKKCommonDictionary& dict) {
     net::socket::tcpstream sock(fd);
@@ -10,45 +10,45 @@ void session(int fd, SKKCommonDictionary& dict) {
 
     do {
         cmd = sock.get();
-        switch(cmd) {
-        case '0':		// 切断
+        switch (cmd) {
+        case '0': // 切断
             break;
 
-	case '1': {		// 検索
-	    std::string word;
-	    std::string key;
+        case '1': { // 検索
+            std::string word;
+            std::string key;
             sock >> word;
             sock.get();
 
-	    jconv::convert_eucj_to_utf8(word, key);
+            jconv::convert_eucj_to_utf8(word, key);
 
-	    SKKCandidateSuite result;
+            SKKCandidateSuite result;
             SKKEntry entry(key);
 
-	    // 検索文字列の最後が [a-z] なら『送りあり』
-	    if(1 < key.size() && 0x7f < (unsigned)key[0] && std::isalpha(key[key.size() - 1])) {
+            // 検索文字列の最後が [a-z] なら『送りあり』
+            if (1 < key.size() && 0x7f < (unsigned)key[0] &&
+                std::isalpha(key[key.size() - 1])) {
                 entry = SKKEntry(key, "dummy");
-	    }
+            }
 
             dict.Find(entry, result);
 
-	    // 見つかった？
-	    if(!result.IsEmpty()) {
-		std::string candidates;
-		jconv::convert_utf8_to_eucj(result.ToString(), candidates);
-		sock << '1' << candidates << std::endl;
-	    } else {
-		sock << '4' << word << std::endl;
-	    }
-	    sock << std::flush;
-	}
-            break;
+            // 見つかった？
+            if (!result.IsEmpty()) {
+                std::string candidates;
+                jconv::convert_utf8_to_eucj(result.ToString(), candidates);
+                sock << '1' << candidates << std::endl;
+            } else {
+                sock << '4' << word << std::endl;
+            }
+            sock << std::flush;
+        } break;
 
-        default:		// 無効なコマンド
-	    sock << '0' << std::flush;
+        default: // 無効なコマンド
+            sock << '0' << std::flush;
             break;
-	}
-    } while(sock.good() && cmd != '0');
+        }
+    } while (sock.good() && cmd != '0');
     sock.close();
 }
 
@@ -70,8 +70,8 @@ void* normal_server(void* param) {
 
     notify_ok(param);
 
-    while(true) {
-	session(skkserv.accept(), dict);
+    while (true) {
+        session(skkserv.accept(), dict);
     }
 
     return 0;
@@ -84,7 +84,7 @@ void* dumb_server(void* param) {
 
     notify_ok(param);
 
-    while(true) {
+    while (true) {
         skkserv.accept();
     }
 
@@ -98,7 +98,7 @@ void* mad_server(void* param) {
 
     notify_ok(param);
 
-    while(true) {
+    while (true) {
         auto fd = skkserv.accept();
         net::socket::tcpstream session(fd);
 
@@ -115,7 +115,7 @@ void* suicide_server(void* param) {
 
     notify_ok(param);
 
-    while(true) {
+    while (true) {
         close(skkserv.accept());
     }
 
@@ -123,9 +123,9 @@ void* suicide_server(void* param) {
 }
 
 // サーバー起動
-void spawn_server(void*(*server)(void* param)) {
+void spawn_server(void* (*server)(void* param)) {
     pthread_t thread;
-    pthread::condition ready; 
+    pthread::condition ready;
     pthread::lock lock(ready);
 
     pthread_create(&thread, 0, server, &ready);
@@ -163,7 +163,7 @@ int main() {
     assert(suite.ToString() == "/漢字/寛治/官寺/");
 
     suite.Clear();
-    
+
     proxy.Find(SKKEntry("NOT-EXIST"), suite);
     assert(suite.IsEmpty());
 
@@ -185,4 +185,3 @@ int main() {
     proxy.Find(SKKEntry("かんじ"), suite);
     assert(suite.IsEmpty());
 }
-

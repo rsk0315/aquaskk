@@ -1,5 +1,5 @@
-#include <iostream>
 #include "SKKGadgetDictionary.h"
+#include <iostream>
 
 int main() {
     SKKGadgetDictionary dict;

@@ -30,15 +30,15 @@ void SKKTextBuffer::Insert(const std::string& str) {
 }
 
 void SKKTextBuffer::BackSpace() {
-    if(cursor_ != minCursorPosition()) {
-	utf8::pop(buf_, cursor_);
+    if (cursor_ != minCursorPosition()) {
+        utf8::pop(buf_, cursor_);
     }
 }
 
 void SKKTextBuffer::Delete() {
-    if(cursor_ != maxCursorPosition()) {
-	CursorRight();
-	BackSpace();
+    if (cursor_ != maxCursorPosition()) {
+        CursorRight();
+        BackSpace();
     }
 }
 
@@ -48,40 +48,30 @@ void SKKTextBuffer::Clear() {
 }
 
 void SKKTextBuffer::CursorLeft() {
-    if(cursor_ != minCursorPosition()) {
-	-- cursor_;
+    if (cursor_ != minCursorPosition()) {
+        --cursor_;
     }
 }
 
 void SKKTextBuffer::CursorRight() {
-    if(cursor_ != maxCursorPosition()) {
-	++ cursor_;
+    if (cursor_ != maxCursorPosition()) {
+        ++cursor_;
     }
 }
 
-void SKKTextBuffer::CursorUp() {
-    cursor_ = minCursorPosition();
-}
+void SKKTextBuffer::CursorUp() { cursor_ = minCursorPosition(); }
 
-void SKKTextBuffer::CursorDown() {
-    cursor_ = maxCursorPosition();
-}
+void SKKTextBuffer::CursorDown() { cursor_ = maxCursorPosition(); }
 
-int SKKTextBuffer::CursorPosition() const {
-    return cursor_;
-}
+int SKKTextBuffer::CursorPosition() const { return cursor_; }
 
-bool SKKTextBuffer::IsEmpty() const {
-    return buf_.empty();
-}
+bool SKKTextBuffer::IsEmpty() const { return buf_.empty(); }
 
 bool SKKTextBuffer::operator==(const std::string& str) const {
     return buf_ == str;
 }
 
-std::string SKKTextBuffer::String() const {
-    return buf_;
-}
+std::string SKKTextBuffer::String() const { return buf_; }
 
 std::string SKKTextBuffer::LeftString() const {
     return utf8::left(buf_, cursor_);
@@ -93,9 +83,7 @@ std::string SKKTextBuffer::RightString() const {
 
 int SKKTextBuffer::minCursorPosition() const {
     // 今のところ毎回計算する(最適化しない)
-    return - utf8::length(buf_);
+    return -utf8::length(buf_);
 }
 
-int SKKTextBuffer::maxCursorPosition() const {
-    return 0;
-}
+int SKKTextBuffer::maxCursorPosition() const { return 0; }

@@ -23,14 +23,14 @@
 #ifndef SKKInputEngine_h
 #define SKKInputEngine_h
 
+#include "SKKCandidateEditor.h"
+#include "SKKCompleter.h"
+#include "SKKComposingEditor.h"
+#include "SKKEntryRemoveEditor.h"
 #include "SKKInputEnvironment.h"
 #include "SKKInputMode.h"
 #include "SKKInputQueue.h"
-#include "SKKComposingEditor.h"
 #include "SKKOkuriEditor.h"
-#include "SKKCandidateEditor.h"
-#include "SKKEntryRemoveEditor.h"
-#include "SKKCompleter.h"
 #include "SKKSelector.h"
 #include <vector>
 

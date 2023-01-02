@@ -20,9 +20,9 @@
 
 */
 
-#include <string>
-#include <map>
 #include "SKKInputMode.h"
+#include <map>
+#include <string>
 
 #ifndef SKKTrie_h
 #define SKKTrie_h
@@ -65,8 +65,10 @@ class SKKTrie {
 
 public:
     SKKTrie();
-    SKKTrie(const std::string& hirakana, const std::string& katakana,
-	    const std::string& jisx0201kana, const std::string& next);
+    SKKTrie(
+        const std::string& hirakana, const std::string& katakana,
+        const std::string& jisx0201kana, const std::string& next
+    );
 
     // 初期化
     void Clear();

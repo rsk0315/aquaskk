@@ -21,12 +21,11 @@
 */
 
 #include "SKKEntryRemoveEditor.h"
-#include "SKKInputContext.h"
 #include "SKKBackEnd.h"
+#include "SKKInputContext.h"
 
 SKKEntryRemoveEditor::SKKEntryRemoveEditor(SKKInputContext* context)
     : SKKBaseEditor(context) {}
-
 
 void SKKEntryRemoveEditor::ReadContext() {
     entry_ = context()->entry;
@@ -34,8 +33,8 @@ void SKKEntryRemoveEditor::ReadContext() {
 
     input_.clear();
 
-    prompt_ = entry_.EntryString() + " /"
-        + candidate_.ToString() + "/ を削除しますか？(yes/no) ";
+    prompt_ = entry_.EntryString() + " /" + candidate_.ToString() +
+              "/ を削除しますか？(yes/no) ";
 }
 
 void SKKEntryRemoveEditor::WriteContext() {
@@ -45,22 +44,22 @@ void SKKEntryRemoveEditor::WriteContext() {
     context()->entry = entry_;
 }
 
-void SKKEntryRemoveEditor::Input(const std::string& ascii) {
-    input_ += ascii;
-}
+void SKKEntryRemoveEditor::Input(const std::string& ascii) { input_ += ascii; }
 
-void SKKEntryRemoveEditor::Input(const std::string& fixed, const std::string&, char) {
+void SKKEntryRemoveEditor::Input(
+    const std::string& fixed, const std::string&, char
+) {
     Input(fixed);
 }
 
 void SKKEntryRemoveEditor::Input(Event event) {
-    if(event == SKKBaseEditor::BackSpace && !input_.empty()) {
+    if (event == SKKBaseEditor::BackSpace && !input_.empty()) {
         input_.erase(input_.end() - 1);
     }
 }
 
 void SKKEntryRemoveEditor::Commit(std::string& queue) {
-    if(input_ != "yes") {
+    if (input_ != "yes") {
         context()->needs_setback = true;
     } else {
         SKKBackEnd::theInstance().Remove(entry_, candidate_);

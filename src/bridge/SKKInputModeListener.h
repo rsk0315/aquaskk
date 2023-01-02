@@ -23,9 +23,9 @@
 #ifndef SKKInputModeListener_h
 #define SKKInputModeListener_h
 
-#include <vector>
 #include "SKKInputMode.h"
 #include "SKKWidget.h"
+#include <vector>
 
 class SKKInputModeListener : public SKKWidget {
 public:

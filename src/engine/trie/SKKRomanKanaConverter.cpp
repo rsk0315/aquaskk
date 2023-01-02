@@ -20,12 +20,12 @@
 
 */
 
-#include "jconv.h"
 #include "SKKRomanKanaConverter.h"
-#include <iostream>
-#include <fstream>
-#include <sstream>
+#include "jconv.h"
 #include <algorithm>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 
 // ======================================================================
 // ユーティリティ
@@ -36,16 +36,17 @@ namespace {
             std::string from;
             const char* to;
         } escape[] = {
-            { "&comma;", "," },
-            { "&space;", " " },
-            { "&sharp;", "#" },
-            { "",      0x00 },
+            {"&comma;", ","},
+            {"&space;", " "},
+            {"&sharp;", "#"},
+            {"", 0x00},
         };
 
-        for(int i = 0; escape[i].to != 0x00; ++ i) {
+        for (int i = 0; escape[i].to != 0x00; ++i) {
             std::string& target = escape[i].from;
             std::string::size_type pos;
-            for(pos = str.find(target); pos != std::string::npos; pos = str.find(target, pos)) {
+            for (pos = str.find(target); pos != std::string::npos;
+                 pos = str.find(target, pos)) {
                 str.replace(pos, target.length(), escape[i].to);
             }
         }
@@ -55,7 +56,8 @@ namespace {
         const std::string target(" ");
         std::string::size_type pos;
 
-        for(pos = str.find(target); pos != std::string::npos; pos = str.find(target, pos)) {
+        for (pos = str.find(target); pos != std::string::npos;
+             pos = str.find(target, pos)) {
             str.replace(pos, target.length(), "&space;");
         }
     }
@@ -70,9 +72,7 @@ namespace {
         std::string next_;
         std::string intermediate_;
 
-        virtual const std::string& SKKTrieRomanString() const {
-            return queue_;
-        }
+        virtual const std::string& SKKTrieRomanString() const { return queue_; }
 
         virtual void SKKTrieNotifyConverted(const SKKTrie* node) {
             converted_ = true;
@@ -94,39 +94,25 @@ namespace {
             queue_ = queue_.substr(length);
         }
 
-        virtual void SKKTrieNotifyShort() {
-            short_ = true;
-        }
+        virtual void SKKTrieNotifyShort() { short_ = true; }
 
     public:
         ConversionHelper(SKKInputMode mode, const std::string& queue)
             : converted_(false), short_(false), mode_(mode), queue_(queue) {}
 
-        const std::string& Output() const {
-            return output_;
-        }
+        const std::string& Output() const { return output_; }
 
-        const std::string& Next() const {
-            return next_;
-        }
+        const std::string& Next() const { return next_; }
 
-        const std::string& Intermediate() const {
-            return intermediate_;
-        }
+        const std::string& Intermediate() const { return intermediate_; }
 
-        const std::string& Queue() const {
-            return queue_;
-        }
+        const std::string& Queue() const { return queue_; }
 
-        bool IsConverted() const {
-            return converted_;
-        }
+        bool IsConverted() const { return converted_; }
 
-        bool IsShort() const {
-            return short_;
-        }
+        bool IsShort() const { return short_; }
     };
-}
+} // namespace
 
 // ======================================================================
 // SKKRomanKanaConverter インタフェース
@@ -146,13 +132,16 @@ void SKKRomanKanaConverter::Patch(const std::string& path) {
     load(path, false);
 }
 
-bool SKKRomanKanaConverter::Convert(SKKInputMode mode, const std::string& str, SKKRomanKanaConversionResult& result) {
+bool SKKRomanKanaConverter::Convert(
+    SKKInputMode mode, const std::string& str,
+    SKKRomanKanaConversionResult& result
+) {
     bool converted = false;
     std::string queue(str);
 
     result = SKKRomanKanaConversionResult();
 
-    while(!queue.empty()) {
+    while (!queue.empty()) {
         ConversionHelper helper(mode, queue);
 
         root_.Traverse(helper);
@@ -163,7 +152,7 @@ bool SKKRomanKanaConverter::Convert(SKKInputMode mode, const std::string& str, S
 
         converted = helper.IsConverted();
 
-        if(helper.IsShort()) {
+        if (helper.IsShort()) {
             result.next = helper.Queue();
             break;
         }
@@ -180,44 +169,47 @@ void SKKRomanKanaConverter::load(const std::string& path, bool initialize) {
     std::ifstream ifs(path.c_str());
     std::string str;
 
-    if(!ifs) {
-	std::cerr << "SKKRomanKanaConverter::load(): can't open file [" << path << "]" << std::endl;
-	return;
+    if (!ifs) {
+        std::cerr << "SKKRomanKanaConverter::load(): can't open file [" << path
+                  << "]" << std::endl;
+        return;
     }
 
-    if(initialize) {
+    if (initialize) {
         root_.Clear();
     }
 
-    while(std::getline(ifs, str)) {
-	if(str.empty() || str[0] == '#') continue;
+    while (std::getline(ifs, str)) {
+        if (str.empty() || str[0] == '#')
+            continue;
 
-	std::string utf8;
-	jconv::convert_eucj_to_utf8(str, utf8);
+        std::string utf8;
+        jconv::convert_eucj_to_utf8(str, utf8);
 
-	// 全ての ',' を空白に置換して分解する(事前に空白をエスケープする)
+        // 全ての ',' を空白に置換して分解する(事前に空白をエスケープする)
         escape_string(utf8);
-	std::replace(utf8.begin(), utf8.end(), ',', ' ');
-	std::istringstream buf(utf8);
+        std::replace(utf8.begin(), utf8.end(), ',', ' ');
+        std::istringstream buf(utf8);
 
-	// 変換ルールを読む
-	std::string roman, hirakana, katakana, jisx0201kana, next;
-	if(buf >> roman >> hirakana >> katakana >> jisx0201kana) {
-	    // オプションの次状態も読む
-	    buf >> next;
+        // 変換ルールを読む
+        std::string roman, hirakana, katakana, jisx0201kana, next;
+        if (buf >> roman >> hirakana >> katakana >> jisx0201kana) {
+            // オプションの次状態も読む
+            buf >> next;
 
-	    // エスケープ文字を元に戻す
-	    unescape_string(roman);
-	    unescape_string(hirakana);
-	    unescape_string(katakana);
-	    unescape_string(jisx0201kana);
-	    unescape_string(next);
+            // エスケープ文字を元に戻す
+            unescape_string(roman);
+            unescape_string(hirakana);
+            unescape_string(katakana);
+            unescape_string(jisx0201kana);
+            unescape_string(next);
 
-	    // ルール木に追加
-	    root_.Add(roman, SKKTrie(hirakana, katakana, jisx0201kana, next));
-	} else {
-	    // 不正な形式
-	    std::cerr << "SKKRomanKanaConverter::load(): invalid rule [" << utf8 << "]" << std::endl;
-	}
+            // ルール木に追加
+            root_.Add(roman, SKKTrie(hirakana, katakana, jisx0201kana, next));
+        } else {
+            // 不正な形式
+            std::cerr << "SKKRomanKanaConverter::load(): invalid rule [" << utf8
+                      << "]" << std::endl;
+        }
     }
 }

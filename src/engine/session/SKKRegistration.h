@@ -31,9 +31,7 @@ public:
 
     SKKRegistration() : state_(None) {}
 
-    void Start() {
-        state_ = Started;
-    }
+    void Start() { state_ = Started; }
 
     void Finish(const std::string& str) {
         state_ = Finished;
@@ -50,13 +48,9 @@ public:
         word_.clear();
     }
 
-    operator State() const {
-        return state_;
-    }
+    operator State() const { return state_; }
 
-    const std::string& Word() const {
-        return word_;
-    }
+    const std::string& Word() const { return word_; }
 
 private:
     State state_;

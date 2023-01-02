@@ -21,11 +21,10 @@
 */
 
 #include "SKKUndoContext.h"
-#include "SKKFrontEnd.h"
 #include "SKKBackEnd.h"
+#include "SKKFrontEnd.h"
 
-SKKUndoContext::SKKUndoContext(SKKFrontEnd* frontend)
-    : frontend_(frontend) {}
+SKKUndoContext::SKKUndoContext(SKKFrontEnd* frontend) : frontend_(frontend) {}
 
 SKKUndoContext::UndoResult SKKUndoContext::Undo() {
     candidate_ = frontend_->SelectedString();
@@ -33,33 +32,28 @@ SKKUndoContext::UndoResult SKKUndoContext::Undo() {
     // 逆引き
     entry_ = SKKBackEnd::theInstance().ReverseLookup(candidate_);
 
-    if(entry_.empty()) {
+    if (entry_.empty()) {
         candidate_.clear();
         return UndoFailed;
     }
 
     // 表示不可能な文字が含まれるか？
-    if(std::find_if(entry_.begin(), entry_.end(),
-                    std::not1(std::ptr_fun(isprint))) != entry_.end()) {
+    if (std::find_if(
+            entry_.begin(), entry_.end(), std::not1(std::ptr_fun(isprint))
+        ) != entry_.end()) {
         return UndoKanaEntry;
     }
 
     return UndoAsciiEntry;
 }
 
-bool SKKUndoContext::IsActive() const {
-    return !entry_.empty();
-}
+bool SKKUndoContext::IsActive() const { return !entry_.empty(); }
 
 void SKKUndoContext::Clear() {
     entry_.clear();
     candidate_.clear();
 }
 
-const std::string& SKKUndoContext::Entry() const {
-    return entry_;
-}
+const std::string& SKKUndoContext::Entry() const { return entry_; }
 
-const std::string& SKKUndoContext::Candidate() const {
-    return candidate_;
-}
+const std::string& SKKUndoContext::Candidate() const { return candidate_; }

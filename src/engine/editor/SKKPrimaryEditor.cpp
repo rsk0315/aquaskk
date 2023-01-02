@@ -31,7 +31,7 @@ void SKKPrimaryEditor::ReadContext() {
 
     SKKRegistration& registration = context()->registration;
 
-    if(registration == SKKRegistration::Finished) {
+    if (registration == SKKRegistration::Finished) {
         context()->output.Fix(registration.Word());
         registration.Clear();
     }
@@ -41,7 +41,9 @@ void SKKPrimaryEditor::Input(const std::string& ascii) {
     context()->event_handled = false;
 }
 
-void SKKPrimaryEditor::Input(const std::string& fixed, const std::string&, char) {
+void SKKPrimaryEditor::Input(
+    const std::string& fixed, const std::string&, char
+) {
     context()->output.Fix(fixed);
 }
 

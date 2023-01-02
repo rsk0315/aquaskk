@@ -13,4 +13,3 @@ int main() {
     ep1.parse("localhost", "8080");
     assert(ep1.node() == "localhost" && ep1.service() == "8080");
 }
-    

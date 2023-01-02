@@ -24,9 +24,9 @@
 // level 1：直接入力
 // ======================================================================
 State SKKState::Primary(const Event& event) {
-    switch(event) {
+    switch (event) {
     case INIT_EVENT:
-	return State::Initial(&SKKState::KanaInput);
+        return State::Initial(&SKKState::KanaInput);
 
     case ENTRY_EVENT:
         editor_->SetStatePrimary();
@@ -37,16 +37,16 @@ State SKKState::Primary(const Event& event) {
         return 0;
 
     case SKK_ENTER:
-	editor_->HandleEnter();
-	return 0;
+        editor_->HandleEnter();
+        return 0;
 
     case SKK_CANCEL:
-	editor_->HandleCancel();
-	return 0;
+        editor_->HandleCancel();
+        return 0;
 
     case SKK_UNDO:
         // Undo 可能なら見出し語入力に遷移する
-        switch(context_->undo.Undo()) {
+        switch (context_->undo.Undo()) {
         case SKKUndoContext::UndoKanaEntry:
             return State::Transition(&SKKState::KanaEntry);
 
@@ -62,8 +62,8 @@ State SKKState::Primary(const Event& event) {
         return 0;
 
     case SKK_PASTE:
-	editor_->HandlePaste();
-	return 0;
+        editor_->HandlePaste();
+        return 0;
 
     case SKK_PING:
         editor_->HandlePing();
@@ -111,7 +111,7 @@ State SKKState::Primary(const Event& event) {
     default:
         // editor で処理されなかったイベントは全て「未処理」にする
         // SKK_TAB もここに来るため、SKK_CHAR でテストはできない
-        if(event.IsUser()) {
+        if (event.IsUser()) {
             editor_->Reset();
             return 0;
         }
@@ -126,41 +126,41 @@ State SKKState::Primary(const Event& event) {
 State SKKState::KanaInput(const Event& event) {
     const SKKEvent& param = event.Param();
 
-    switch(event) {
+    switch (event) {
     case INIT_EVENT:
-	return State::ShallowHistory(&SKKState::Hirakana);
+        return State::ShallowHistory(&SKKState::Hirakana);
 
     case EXIT_EVENT:
-	return State::SaveHistory();
+        return State::SaveHistory();
 
     case SKK_CHAR:
-	if(!editor_->CanConvert(param.code)) {
-	    if(param.IsSwitchToAscii()) {
-		return State::Transition(&SKKState::Ascii);
-	    }
+        if (!editor_->CanConvert(param.code)) {
+            if (param.IsSwitchToAscii()) {
+                return State::Transition(&SKKState::Ascii);
+            }
 
-	    if(param.IsSwitchToJisx0208Latin()) {
-		return State::Transition(&SKKState::Jisx0208Latin);
-	    }
+            if (param.IsSwitchToJisx0208Latin()) {
+                return State::Transition(&SKKState::Jisx0208Latin);
+            }
 
-	    if(param.IsEnterAbbrev()) {
-		return State::Transition(&SKKState::AsciiEntry);
-	    }
+            if (param.IsEnterAbbrev()) {
+                return State::Transition(&SKKState::AsciiEntry);
+            }
 
-	    if(param.IsEnterJapanese()) {
-		return State::Transition(&SKKState::KanaEntry);
-	    }
-	}
+            if (param.IsEnterJapanese()) {
+                return State::Transition(&SKKState::KanaEntry);
+            }
+        }
 
-        if(param.IsStickyKey()) {
+        if (param.IsStickyKey()) {
             return State::Transition(&SKKState::KanaEntry);
         }
-	if(param.IsUpperCases()) {
-	    return State::Forward(&SKKState::KanaEntry);
-	}
+        if (param.IsUpperCases()) {
+            return State::Forward(&SKKState::KanaEntry);
+        }
 
         // キー修飾がない場合のみローマ字かな変換を実施する
-        if(param.IsInputChars()) {
+        if (param.IsInputChars()) {
             editor_->HandleChar(param.code, param.IsDirect());
             return 0;
         }
@@ -175,16 +175,16 @@ State SKKState::KanaInput(const Event& event) {
 State SKKState::Hirakana(const Event& event) {
     const SKKEvent& param = event.Param();
 
-    switch(event) {
+    switch (event) {
     case ENTRY_EVENT:
         editor_->SelectInputMode(HirakanaInputMode);
-	return 0;
+        return 0;
 
     case SKK_HIRAKANA_MODE:
         return 0;
 
     case SKK_CHAR:
-        if(!(param.IsInputChars() && editor_->CanConvert(param.code))) {
+        if (!(param.IsInputChars() && editor_->CanConvert(param.code))) {
             // 変換する文字がない場合のみ、ToggleKana等の処理する
             //
             // 例: AZIKの場合
@@ -193,12 +193,12 @@ State SKKState::Hirakana(const Event& event) {
             //   - x[: 鍵括弧
             //
             // が割り当てられている
-            if(param.IsToggleKana()) {
+            if (param.IsToggleKana()) {
                 return State::Transition(&SKKState::Katakana);
             }
 
-            if(param.IsToggleJisx0201Kana()) {
-              return State::Transition(&SKKState::Jisx0201Kana);
+            if (param.IsToggleJisx0201Kana()) {
+                return State::Transition(&SKKState::Jisx0201Kana);
             }
         }
     }
@@ -212,22 +212,23 @@ State SKKState::Hirakana(const Event& event) {
 State SKKState::Katakana(const Event& event) {
     const SKKEvent& param = event.Param();
 
-    switch(event) {
+    switch (event) {
     case ENTRY_EVENT:
         editor_->SelectInputMode(KatakanaInputMode);
-	return 0;
+        return 0;
 
     case SKK_KATAKANA_MODE:
         return 0;
 
     default:
-        if(!(event == SKK_CHAR && param.IsInputChars() && editor_->CanConvert(param.code))) {
+        if (!(event == SKK_CHAR && param.IsInputChars() &&
+              editor_->CanConvert(param.code))) {
             // 変換する文字がない場合のみ、ToggleKana等の処理する
-            if(event == SKK_JMODE || param.IsToggleKana()) {
+            if (event == SKK_JMODE || param.IsToggleKana()) {
                 return State::Transition(&SKKState::Hirakana);
             }
 
-            if(param.IsToggleJisx0201Kana()) {
+            if (param.IsToggleJisx0201Kana()) {
                 return State::Transition(&SKKState::Jisx0201Kana);
             }
         }
@@ -242,20 +243,21 @@ State SKKState::Katakana(const Event& event) {
 State SKKState::Jisx0201Kana(const Event& event) {
     const SKKEvent& param = event.Param();
 
-    switch(event) {
+    switch (event) {
     case ENTRY_EVENT:
         editor_->SelectInputMode(Jisx0201KanaInputMode);
-	return 0;
+        return 0;
 
     case SKK_JISX0201KANA_MODE:
         return 0;
 
     default:
-        if(!(event == SKK_CHAR && param.IsInputChars() && editor_->CanConvert(param.code))) {
+        if (!(event == SKK_CHAR && param.IsInputChars() &&
+              editor_->CanConvert(param.code))) {
             // 変換する文字がない場合のみ、ToggleKana等の処理する
-            if(event == SKK_JMODE ||
-                param.IsToggleKana() || param.IsToggleJisx0201Kana()) {
-              return State::Transition(&SKKState::Hirakana);
+            if (event == SKK_JMODE || param.IsToggleKana() ||
+                param.IsToggleJisx0201Kana()) {
+                return State::Transition(&SKKState::Hirakana);
             }
         }
     }
@@ -269,13 +271,13 @@ State SKKState::Jisx0201Kana(const Event& event) {
 State SKKState::LatinInput(const Event& event) {
     SKKEvent param(event.Param());
 
-    switch(event) {
+    switch (event) {
     case SKK_JMODE:
-	return State::Transition(&SKKState::Hirakana);
+        return State::Transition(&SKKState::Hirakana);
 
     case SKK_CHAR:
-        if(param.IsInputChars()) {
-            if(param.option & CapsLock) {
+        if (param.IsInputChars()) {
+            if (param.option & CapsLock) {
                 param.code = std::toupper(param.code);
             }
             editor_->HandleChar(param.code, param.IsDirect());
@@ -290,10 +292,10 @@ State SKKState::LatinInput(const Event& event) {
 // level 2 (sub of LatinInput)：ASCII
 // ======================================================================
 State SKKState::Ascii(const Event& event) {
-    switch(event) {
+    switch (event) {
     case ENTRY_EVENT:
         editor_->SelectInputMode(AsciiInputMode);
-	return 0;
+        return 0;
 
     case SKK_ASCII_MODE:
         return 0;
@@ -308,18 +310,18 @@ State SKKState::Ascii(const Event& event) {
 State SKKState::Jisx0208Latin(const Event& event) {
     const SKKEvent& param = event.Param();
 
-    switch(event) {
+    switch (event) {
     case ENTRY_EVENT:
         editor_->SelectInputMode(Jisx0208LatinInputMode);
-	return 0;
+        return 0;
 
     case SKK_JISX0208LATIN_MODE:
         return 0;
 
     default:
-        if(event == SKK_ASCII_MODE ||
-           (!param.IsInputChars() && param.IsSwitchToAscii())) {
-           return State::Transition(&SKKState::Ascii);
+        if (event == SKK_ASCII_MODE ||
+            (!param.IsInputChars() && param.IsSwitchToAscii())) {
+            return State::Transition(&SKKState::Ascii);
         }
     }
 

@@ -1,7 +1,7 @@
+#include "MockCompletionHelper.h"
+#include "SKKLocalUserDictionary.h"
 #include <cassert>
 #include <iostream>
-#include "SKKLocalUserDictionary.h"
-#include "MockCompletionHelper.h"
 
 int main() {
     SKKLocalUserDictionary dict;

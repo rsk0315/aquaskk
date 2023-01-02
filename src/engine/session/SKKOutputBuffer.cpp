@@ -24,9 +24,8 @@
 #include "SKKFrontEnd.h"
 #include "utf8util.h"
 
-SKKOutputBuffer::SKKOutputBuffer(SKKFrontEnd* frontend)
-    : frontend_(frontend) {}
-    
+SKKOutputBuffer::SKKOutputBuffer(SKKFrontEnd* frontend) : frontend_(frontend) {}
+
 void SKKOutputBuffer::Fix(const std::string& str) {
     frontend_->InsertString(str);
 }
@@ -43,13 +42,9 @@ void SKKOutputBuffer::Convert(const std::string& str) {
     Compose(str);
 }
 
-void SKKOutputBuffer::SetMark() {
-    mark_ = utf8::length(composing_) + cursor_;
-}
+void SKKOutputBuffer::SetMark() { mark_ = utf8::length(composing_) + cursor_; }
 
-int SKKOutputBuffer::GetMark() const {
-    return mark_;
-}
+int SKKOutputBuffer::GetMark() const { return mark_; }
 
 void SKKOutputBuffer::Clear() {
     composing_.clear();
@@ -57,19 +52,17 @@ void SKKOutputBuffer::Clear() {
 }
 
 void SKKOutputBuffer::Output() {
-    if(composing_ == last_ && composing_.empty()) {
+    if (composing_ == last_ && composing_.empty()) {
         return;
     }
 
-    if(length_) {
+    if (length_) {
         frontend_->ComposeString(composing_, start_, length_);
     } else {
         frontend_->ComposeString(composing_, cursor_);
     }
-    
+
     last_ = composing_;
 }
 
-bool SKKOutputBuffer::IsComposing() const {
-    return !composing_.empty();
-}
+bool SKKOutputBuffer::IsComposing() const { return !composing_.empty(); }

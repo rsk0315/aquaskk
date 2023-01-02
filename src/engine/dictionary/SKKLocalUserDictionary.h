@@ -23,10 +23,10 @@
 #ifndef SKKLocalUserDictionary_h
 #define SKKLocalUserDictionary_h
 
-#include "SKKUserDictionary.h"
 #include "SKKDictionaryFile.h"
-#include <vector>
+#include "SKKUserDictionary.h"
 #include <ctime>
+#include <vector>
 
 class SKKLocalUserDictionary : public SKKUserDictionary {
     std::string path_;
@@ -35,8 +35,12 @@ class SKKLocalUserDictionary : public SKKUserDictionary {
     SKKDictionaryFile file_;
     bool privateMode_;
 
-    std::string fetch(const SKKEntry& entry, SKKDictionaryEntryContainer& container);
-    void remove(const SKKEntry& entry, const std::string& kanji, SKKDictionaryEntryContainer& container);
+    std::string
+    fetch(const SKKEntry& entry, SKKDictionaryEntryContainer& container);
+    void remove(
+        const SKKEntry& entry, const std::string& kanji,
+        SKKDictionaryEntryContainer& container
+    );
     void save(bool force = false);
     void fix();
 

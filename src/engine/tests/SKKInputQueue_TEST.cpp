@@ -1,7 +1,7 @@
-#include <cassert>
-#include <iostream>
 #include "SKKInputQueue.h"
 #include "SKKRomanKanaConverter.h"
+#include <cassert>
+#include <iostream>
 
 class TestInputQueueObserver : public SKKInputQueueObserver {
     State state_;
@@ -12,16 +12,15 @@ public:
         state_.queue = state.queue;
     }
 
-    void Clear() {
-        state_ = State();
-    }
+    void Clear() { state_ = State(); }
 
     bool Test(const std::string& fixed, const std::string& queue) {
         return state_.fixed == fixed && state_.queue == queue;
     }
 
     void Dump() {
-        std::cerr << "fixed=" << state_.fixed << ", queue=" << state_.queue << std::endl;
+        std::cerr << "fixed=" << state_.fixed << ", queue=" << state_.queue
+                  << std::endl;
     }
 };
 

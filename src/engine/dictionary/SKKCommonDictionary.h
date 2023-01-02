@@ -33,6 +33,8 @@
 typedef SKKDictionaryTemplate<SKKLocalDictionaryLoader> SKKCommonDictionary;
 
 // UTF-8 版
-typedef SKKDictionaryTemplate<SKKLocalDictionaryLoader, SKKDictionaryKeeper::UTF_8> SKKCommonDictionaryUTF8;
+typedef SKKDictionaryTemplate<
+    SKKLocalDictionaryLoader, SKKDictionaryKeeper::UTF_8>
+    SKKCommonDictionaryUTF8;
 
 #endif

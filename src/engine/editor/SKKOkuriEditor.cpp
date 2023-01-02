@@ -23,11 +23,13 @@
 #include "SKKOkuriEditor.h"
 #include "SKKInputContext.h"
 #include "utf8util.h"
-#include <iostream>
 #include <cctype>
 #include <exception>
+#include <iostream>
 
-SKKOkuriEditor::SKKOkuriEditor(SKKInputContext* context, SKKOkuriListener* listener)
+SKKOkuriEditor::SKKOkuriEditor(
+    SKKInputContext* context, SKKOkuriListener* listener
+)
     : SKKBaseEditor(context), listener_(listener) {}
 
 void SKKOkuriEditor::ReadContext() {
@@ -43,15 +45,17 @@ void SKKOkuriEditor::WriteContext() {
     update();
 }
 
-void SKKOkuriEditor::Input(const std::string& fixed, const std::string& input, char code) {
+void SKKOkuriEditor::Input(
+    const std::string& fixed, const std::string& input, char code
+) {
     input_ = input;
 
-    if(first_) {
+    if (first_) {
         first_ = false;
         prefix_ += std::tolower(code);
 
         // KesSi 対応
-        if(!fixed.empty() && !input.empty()) {
+        if (!fixed.empty() && !input.empty()) {
             listener_->SKKOkuriListenerAppendEntry(fixed);
             update();
             return;
@@ -60,22 +64,22 @@ void SKKOkuriEditor::Input(const std::string& fixed, const std::string& input, c
 
     // fixed が ascii の場合には送りとはみなさない
     // 文字種で判断したいところだが、とりあえず長さで判断
-    if(utf8::length(fixed) != fixed.size()) {
+    if (utf8::length(fixed) != fixed.size()) {
         okuri_ += fixed;
     }
 
     // OWsa 対応
-    if(okuri_.empty()) {
+    if (okuri_.empty()) {
         prefix_.clear();
-        if(input.empty()) {
-            if(code != 0) {
+        if (input.empty()) {
+            if (code != 0) {
                 prefix_ += std::tolower(code);
             }
         } else {
             prefix_ += std::tolower(input[0]);
         }
     } else {
-        if(prefix_.empty() && code != 0) {
+        if (prefix_.empty() && code != 0) {
             prefix_ += std::tolower(code);
         }
     }
@@ -84,8 +88,8 @@ void SKKOkuriEditor::Input(const std::string& fixed, const std::string& input, c
 }
 
 void SKKOkuriEditor::Input(SKKBaseEditor::Event event) {
-    if(event == BackSpace) {
-        if(okuri_.empty()) {
+    if (event == BackSpace) {
+        if (okuri_.empty()) {
             context()->needs_setback = true;
         } else {
             utf8::pop(okuri_);
@@ -106,6 +110,4 @@ bool SKKOkuriEditor::IsOkuriComplete() const {
 
 // ----------------------------------------------------------------------
 
-void SKKOkuriEditor::update() {
-    context()->entry.SetOkuri(prefix_, okuri_);
-}
+void SKKOkuriEditor::update() { context()->entry.SetOkuri(prefix_, okuri_); }

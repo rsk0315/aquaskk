@@ -23,12 +23,12 @@
 #ifndef SKKDictionaryKeeper_h
 #define SKKDictionaryKeeper_h
 
+#include "SKKCompletionHelper.h"
 #include "SKKDictionaryFile.h"
 #include "SKKDictionaryLoader.h"
-#include "SKKCompletionHelper.h"
 #include "pthreadutil.h"
-#include <vector>
 #include <memory>
+#include <vector>
 
 class SKKDictionaryKeeper : public SKKDictionaryLoaderObserver {
     std::auto_ptr<pthread::timer> timer_;
@@ -40,7 +40,8 @@ class SKKDictionaryKeeper : public SKKDictionaryLoaderObserver {
 
     virtual void SKKDictionaryLoaderUpdate(const SKKDictionaryFile& file);
 
-    std::string fetch(const std::string& query, SKKDictionaryEntryContainer& container);
+    std::string
+    fetch(const std::string& query, SKKDictionaryEntryContainer& container);
     bool ready();
 
     std::string eucj_from_utf8(const std::string& src);

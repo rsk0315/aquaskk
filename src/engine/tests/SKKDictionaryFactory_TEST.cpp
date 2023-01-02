@@ -1,7 +1,7 @@
-#include <cassert>
-#include "SKKDictionaryFactory.h"
 #include "SKKBaseDictionary.h"
 #include "SKKCommonDictionary.h"
+#include "SKKDictionaryFactory.h"
+#include <cassert>
 
 int main() {
     SKKRegisterFactoryMethod<SKKCommonDictionary>(0);

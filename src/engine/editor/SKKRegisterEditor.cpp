@@ -39,16 +39,16 @@ void SKKRegisterEditor::WriteContext() {
     context()->output.Compose(prompt_ + word_.String(), word_.CursorPosition());
 }
 
-void SKKRegisterEditor::Input(const std::string& ascii) {
-    word_.Insert(ascii);
-}
+void SKKRegisterEditor::Input(const std::string& ascii) { word_.Insert(ascii); }
 
-void SKKRegisterEditor::Input(const std::string& fixed, const std::string&, char) {
+void SKKRegisterEditor::Input(
+    const std::string& fixed, const std::string&, char
+) {
     Input(fixed);
 }
 
 void SKKRegisterEditor::Input(SKKBaseEditor::Event event) {
-    switch(event) {
+    switch (event) {
     case BackSpace:
         word_.BackSpace();
         break;
@@ -56,7 +56,7 @@ void SKKRegisterEditor::Input(SKKBaseEditor::Event event) {
     case Delete:
         word_.Delete();
         break;
-        
+
     case CursorLeft:
         word_.CursorLeft();
         break;

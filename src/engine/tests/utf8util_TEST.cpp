@@ -1,5 +1,5 @@
-#include <cassert>
 #include "utf8util.h"
+#include <cassert>
 
 int main() {
     std::string str = "ABCいろは日本語ＡＢＣ";

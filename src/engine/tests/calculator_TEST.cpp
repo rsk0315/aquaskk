@@ -17,24 +17,20 @@ int main() {
     try {
         calc.run("1/0");
         assert("divide by ZERO" && false);
-    } catch(...) {
-    }
+    } catch (...) {}
 
     try {
         calc.run("(");
         assert("')' expected" && false);
-    } catch(...) {
-    }
+    } catch (...) {}
 
     try {
         calc.run("a");
         assert("invalid characer" && false);
-    } catch(...) {
-    }
+    } catch (...) {}
 
     try {
         calc.run("");
         assert("no data found" && false);
-    } catch(...) {
-    }
+    } catch (...) {}
 }

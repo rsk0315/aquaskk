@@ -3,11 +3,11 @@
  * subrange.h - subrange of STL sequence container.
  *
  *   Copyright (c) 2007 Tomotaka SUWA, All rights reserved.
- * 
+ *
  *   Redistribution and use in source and binary forms, with or without
  *   modification, are permitted provided that the following conditions
  *   are met:
- * 
+ *
  *   1. Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *
@@ -43,20 +43,20 @@ class subrange {
     Iter end_;
 
     void adjust(Container& container, size_type pos, size_type length) {
-	unsigned size = container.size();
+        unsigned size = container.size();
 
-	if(pos < size) {
-	    begin_ = container.begin() + pos;
-	} else {
-	    begin_ = end_ = container.end();
-	    return;
-	}
+        if (pos < size) {
+            begin_ = container.begin() + pos;
+        } else {
+            begin_ = end_ = container.end();
+            return;
+        }
 
-	if(length == -1U ||  size < pos + length) {
-	    end_ = container.end();
-	} else {
-      	    end_ = begin_ + length;
-	}
+        if (length == -1U || size < pos + length) {
+            end_ = container.end();
+        } else {
+            end_ = begin_ + length;
+        }
     }
 
 public:
@@ -66,16 +66,16 @@ public:
     subrange() {}
     subrange(Iter begin, Iter end) : begin_(begin), end_(end) {}
     subrange(Container& container, size_type pos, size_type length = -1U) {
-	adjust(container, pos, length);
+        adjust(container, pos, length);
     }
 
     void set(Iter begin, Iter end) {
-	begin_ = begin;
-	end_ = end;
+        begin_ = begin;
+        end_ = end;
     }
 
     void set(Container& container, size_type pos, size_type length = -1U) {
-	adjust(container, pos, length);
+        adjust(container, pos, length);
     }
 
     size_type size() const { return end() - begin(); }
@@ -91,7 +91,9 @@ public:
     value_type& back() { return *(end() - 1); }
 
     value_type& operator[](size_type pos) { return *(begin() + pos); }
-    const value_type& operator[](size_type pos) const { return *(begin() + pos); }
+    const value_type& operator[](size_type pos) const {
+        return *(begin() + pos);
+    }
 };
 
 #endif

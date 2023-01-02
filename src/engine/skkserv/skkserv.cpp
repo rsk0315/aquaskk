@@ -22,12 +22,12 @@
 */
 
 #include "skkserv.h"
-#include <iostream>
-#include <string>
-#include <cctype>
-#include <unistd.h>
 #include "SKKBackEnd.h"
 #include "jconv.h"
+#include <cctype>
+#include <iostream>
+#include <string>
+#include <unistd.h>
 
 namespace {
     // スレッド引数
@@ -39,12 +39,13 @@ namespace {
 
         int fd() const { return fd_; }
     };
-}
+} // namespace
 
-skkserv::skkserv(unsigned short port, bool localonly) : thread_(0), localonly_(localonly) {
+skkserv::skkserv(unsigned short port, bool localonly)
+    : thread_(0), localonly_(localonly) {
     server_.open(port);
 
-    if(server_) {
+    if (server_) {
         incoming_.add(server_.socket(), net::socket::monitor::READ);
         pthread_create(&thread_, 0, skkserv::listener, this);
     } else {
@@ -53,104 +54,110 @@ skkserv::skkserv(unsigned short port, bool localonly) : thread_(0), localonly_(l
 }
 
 skkserv::~skkserv() {
-    if(thread_ && pthread_cancel(thread_) == 0) {
-	server_.close();
+    if (thread_ && pthread_cancel(thread_) == 0) {
+        server_.close();
         pthread_join(thread_, 0);
-	thread_ = 0;
+        thread_ = 0;
     }
 }
 
 void* skkserv::listener(void* param) {
     skkserv* server = reinterpret_cast<skkserv*>(param);
 
-    while(true) {
-	pthread_testcancel();
-	server->accept();
+    while (true) {
+        pthread_testcancel();
+        server->accept();
     }
 
     return 0;
 }
 
 void skkserv::accept() {
-    if(0 < incoming_.wait()) {
-	int fd = server_.accept();
-	if(fd == -1) return;
+    if (0 < incoming_.wait()) {
+        int fd = server_.accept();
+        if (fd == -1)
+            return;
 
-	net::socket::namepair remote = net::socket::nameinfo::remote(fd);
-	if(localonly_ && remote.first != "127.0.0.1") {
-	    std::cout << "AquaSKK(skkserv): reject[" << remote.first << "]" << std::endl;
-	    close(fd);
-	    return;
-	}
+        net::socket::namepair remote = net::socket::nameinfo::remote(fd);
+        if (localonly_ && remote.first != "127.0.0.1") {
+            std::cout << "AquaSKK(skkserv): reject[" << remote.first << "]"
+                      << std::endl;
+            close(fd);
+            return;
+        }
 
-	pthread_t tmp;
-	thread_param* param = new thread_param(fd);
-	pthread_create(&tmp, 0, skkserv::worker, param);
+        pthread_t tmp;
+        thread_param* param = new thread_param(fd);
+        pthread_create(&tmp, 0, skkserv::worker, param);
     }
 }
 
 void* skkserv::worker(void* arg) {
     thread_param* param = reinterpret_cast<thread_param*>(arg);
     net::socket::tcpstream session(param->fd());
-    net::socket::namepair remote = net::socket::nameinfo::remote(session.socket());
+    net::socket::namepair remote =
+        net::socket::nameinfo::remote(session.socket());
     delete param;
 
-    std::cout << "AquaSKK(skkserv): session start[" << remote.first << "]" << std::endl;
+    std::cout << "AquaSKK(skkserv): session start[" << remote.first << "]"
+              << std::endl;
 
     unsigned char cmd;
     do {
         cmd = session.get();
-        switch(cmd) {
-        case '0':		// 切断
+        switch (cmd) {
+        case '0': // 切断
             break;
 
-	case '1': {		// 検索
-	    std::string word;
+        case '1': { // 検索
+            std::string word;
             session >> word;
             session.get();
 
-	    std::string key = jconv::utf8_from_eucj(word);
-	    SKKEntry entry;
-	    SKKCandidateSuite result;
+            std::string key = jconv::utf8_from_eucj(word);
+            SKKEntry entry;
+            SKKCandidateSuite result;
 
-	    // 検索文字列の最後が [a-z] なら『送りあり』とする
-	    if(1 < key.size() && 0x7f < (unsigned)key[0] && std::isalpha(key[key.size() - 1])) {
-		entry = SKKEntry(key, "dummy");
-	    } else {
-		entry = SKKEntry(key);
-	    }
-	    
-	    SKKBackEnd::theInstance().Find(entry, result);
-            std::string candidates = jconv::eucj_from_utf8(result.ToString(true));
-            if(!candidates.empty()) {
-		session << '1' << candidates << std::endl;
-	    } else {
-		session << '4' << word << std::endl;
-	    }
-	    session.flush();
-	}
+            // 検索文字列の最後が [a-z] なら『送りあり』とする
+            if (1 < key.size() && 0x7f < (unsigned)key[0] &&
+                std::isalpha(key[key.size() - 1])) {
+                entry = SKKEntry(key, "dummy");
+            } else {
+                entry = SKKEntry(key);
+            }
+
+            SKKBackEnd::theInstance().Find(entry, result);
+            std::string candidates =
+                jconv::eucj_from_utf8(result.ToString(true));
+            if (!candidates.empty()) {
+                session << '1' << candidates << std::endl;
+            } else {
+                session << '4' << word << std::endl;
+            }
+            session.flush();
+        } break;
+
+        case '2': // バージョン
+            session << "AquaSKKServer1.0 " << std::flush;
             break;
 
-        case '2':		// バージョン
-	    session << "AquaSKKServer1.0 " << std::flush;
+        case '3': // ホスト情報
+            session << "127.0.0.1:0.0.0.0: " << std::flush;
             break;
 
-        case '3':		// ホスト情報
-	    session << "127.0.0.1:0.0.0.0: " << std::flush;
+        case '4': // サーバー補完
+            // 今のところ未対応
+            session.ignore(0xff, ' ');
+
+        default: // 無効なコマンド
+            fprintf(stderr, "AquaSKK(skkserv): Unknown command[0x%02x]\n", cmd);
+            session << '0' << std::flush;
             break;
+        }
+    } while (session.good() && cmd != '0');
 
-	case '4':		// サーバー補完
-	    // 今のところ未対応
-	    session.ignore(0xff, ' ');
-
-        default:		// 無効なコマンド
-	    fprintf(stderr, "AquaSKK(skkserv): Unknown command[0x%02x]\n", cmd);
-	    session << '0' << std::flush;
-            break;
-	}
-    } while(session.good() && cmd != '0');
-
-    std::cout << "AquaSKK(skkserv): session finish[" << remote.first << "]" << std::endl;
+    std::cout << "AquaSKK(skkserv): session finish[" << remote.first << "]"
+              << std::endl;
 
     return 0;
 }

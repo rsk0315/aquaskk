@@ -23,8 +23,8 @@
 #ifndef SKKWindowSelector_h
 #define SKKWindowSelector_h
 
-#include <vector>
 #include "SKKBaseSelector.h"
+#include <vector>
 
 class SKKWindowSelector : public SKKBaseSelector {
     class SKKCandidateWindow* window_;

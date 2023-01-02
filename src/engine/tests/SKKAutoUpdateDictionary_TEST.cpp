@@ -1,6 +1,6 @@
+#include "SKKAutoUpdateDictionary.h"
 #include <cassert>
 #include <sys/stat.h>
-#include "SKKAutoUpdateDictionary.h"
 
 int main() {
     const char* path1 = "SKK-JISYO.S1";
@@ -11,8 +11,11 @@ int main() {
     remove(path1);
     remove(path2);
 
-    dict1.Initialize("openlab.ring.gr.jp /skk/skk/dic/SKK-JISYO.S SKK-JISYO.S1");
-    dict2.Initialize("openlab.ring.gr.jp:80 /skk/skk/dic/SKK-JISYO.S SKK-JISYO.S2");
+    dict1.Initialize("openlab.ring.gr.jp /skk/skk/dic/SKK-JISYO.S SKK-JISYO.S1"
+    );
+    dict2.Initialize(
+        "openlab.ring.gr.jp:80 /skk/skk/dic/SKK-JISYO.S SKK-JISYO.S2"
+    );
 
     dict1.Find(SKKEntry("dummy", "d"), suite);
     dict2.Find(SKKEntry("dummy", "d"), suite);

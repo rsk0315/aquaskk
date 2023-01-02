@@ -28,7 +28,9 @@
 
 // 標準的な SKK 辞書実装用のテンプレート
 
-template <typename Loader, SKKDictionaryKeeper::Encoding encoding = SKKDictionaryKeeper::EUC_JP>
+template <
+    typename Loader,
+    SKKDictionaryKeeper::Encoding encoding = SKKDictionaryKeeper::EUC_JP>
 class SKKDictionaryTemplate : public SKKBaseDictionary {
     SKKDictionaryKeeper keeper_;
     Loader loader_;
@@ -45,12 +47,12 @@ public:
         const std::string& key = entry.EntryString();
         SKKCandidateSuite suite;
 
-        if(entry.IsOkuriAri()) {
+        if (entry.IsOkuriAri()) {
             suite.Parse(keeper_.FindOkuriAri(key));
 
             SKKCandidateSuite strict;
 
-            if(suite.FindOkuriStrictly(entry.OkuriString(), strict)) {
+            if (suite.FindOkuriStrictly(entry.OkuriString(), strict)) {
                 strict.Add(suite.Hints());
                 suite = strict;
             }

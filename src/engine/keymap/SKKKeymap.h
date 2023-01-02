@@ -23,9 +23,9 @@
 #ifndef SKKKeymap_h
 #define SKKKeymap_h
 
+#include "SKKEvent.h"
 #include <map>
 #include <string>
-#include "SKKEvent.h"
 
 // キーマップ
 class SKKKeymap {

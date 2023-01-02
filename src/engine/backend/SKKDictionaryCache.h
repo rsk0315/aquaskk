@@ -23,8 +23,8 @@
 #ifndef SKKDictionaryCache_h
 #define SKKDictionaryCache_h
 
-#include <map>
 #include "SKKDictionaryKey.h"
+#include <map>
 
 class SKKBaseDictionary;
 

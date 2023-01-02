@@ -21,12 +21,12 @@
 */
 
 #include "SKKInputEngine.h"
-#include "SKKInputContext.h"
-#include "SKKConfig.h"
-#include "SKKClipboard.h"
 #include "SKKBackEnd.h"
-#include <iostream>
+#include "SKKClipboard.h"
+#include "SKKConfig.h"
+#include "SKKInputContext.h"
 #include <cctype>
+#include <iostream>
 
 // ----------------------------------------------------------------------
 
@@ -57,15 +57,12 @@ public:
 // ----------------------------------------------------------------------
 
 SKKInputEngine::SKKInputEngine(SKKInputEnvironment* env)
-    : env_(env)
-    , param_(env->InputSessionParameter())
-    , context_(env->InputContext())
-    , config_(env->Config())
-    , inputQueue_(this)
-    , composingEditor_(env->InputContext())
-    , okuriEditor_(env->InputContext(), this)
-    , candidateEditor_(env->InputContext())
-    , entryRemoveEditor_(env->InputContext()) {
+    : env_(env), param_(env->InputSessionParameter()),
+      context_(env->InputContext()), config_(env->Config()), inputQueue_(this),
+      composingEditor_(env->InputContext()),
+      okuriEditor_(env->InputContext(), this),
+      candidateEditor_(env->InputContext()),
+      entryRemoveEditor_(env->InputContext()) {
     SetStatePrimary();
 }
 
@@ -76,9 +73,7 @@ void SKKInputEngine::SelectInputMode(SKKInputMode mode) {
     context_->event_handled = true;
 }
 
-void SKKInputEngine::SetStatePrimary() {
-    Synchronizer sync(this);
-}
+void SKKInputEngine::SetStatePrimary() { Synchronizer sync(this); }
 
 void SKKInputEngine::SetStateComposing() {
     Synchronizer sync(this);
@@ -87,7 +82,7 @@ void SKKInputEngine::SetStateComposing() {
 
     SKKEntry& entry = context_->entry;
 
-    if(!config_->DeleteOkuriWhenQuit()) {
+    if (!config_->DeleteOkuriWhenQuit()) {
         entry.AppendEntry(entry.OkuriString());
     }
 }
@@ -122,47 +117,35 @@ void SKKInputEngine::HandleChar(char code, bool direct) {
 }
 
 void SKKInputEngine::HandleBackSpace() {
-    if(inputQueue_.IsEmpty()) {
+    if (inputQueue_.IsEmpty()) {
         invoke(SKKBaseEditor::BackSpace);
     } else {
         inputQueue_.RemoveChar();
     }
 }
 
-void SKKInputEngine::HandleDelete() {
-    invoke(SKKBaseEditor::Delete);
-}
+void SKKInputEngine::HandleDelete() { invoke(SKKBaseEditor::Delete); }
 
-void SKKInputEngine::HandleCursorLeft() {
-    invoke(SKKBaseEditor::CursorLeft);
-}
+void SKKInputEngine::HandleCursorLeft() { invoke(SKKBaseEditor::CursorLeft); }
 
-void SKKInputEngine::HandleCursorRight() {
-    invoke(SKKBaseEditor::CursorRight);
-}
+void SKKInputEngine::HandleCursorRight() { invoke(SKKBaseEditor::CursorRight); }
 
-void SKKInputEngine::HandleCursorUp() {
-    invoke(SKKBaseEditor::CursorUp);
-}
+void SKKInputEngine::HandleCursorUp() { invoke(SKKBaseEditor::CursorUp); }
 
-void SKKInputEngine::HandleCursorDown() {
-    invoke(SKKBaseEditor::CursorDown);
-}
+void SKKInputEngine::HandleCursorDown() { invoke(SKKBaseEditor::CursorDown); }
 
 void SKKInputEngine::HandlePaste() {
     top()->Input(param_->Clipboard()->PasteString());
 }
 
-void SKKInputEngine::HandlePing() {
-    env_->InputModeSelector()->Show();
-}
+void SKKInputEngine::HandlePing() { env_->InputModeSelector()->Show(); }
 
 void SKKInputEngine::HandleEnter() {
     Commit();
 
     study(context_->entry, SKKCandidate(word_, false));
 
-    if(word_.empty()) {
+    if (word_.empty()) {
         context_->registration.Abort();
     } else {
         std::string output = word_ + context_->entry.OkuriString();
@@ -174,7 +157,7 @@ void SKKInputEngine::HandleEnter() {
 }
 
 void SKKInputEngine::HandleCancel() {
-    if(!inputQueue_.IsEmpty()) {
+    if (!inputQueue_.IsEmpty()) {
         terminate();
         return;
     }
@@ -190,7 +173,7 @@ void SKKInputEngine::Commit() {
 
     // Top のフィルターから Commit していき、最終的な単語を取得する
     std::vector<SKKBaseEditor*>::reverse_iterator iter;
-    for(iter = stack_.rbegin(); iter != stack_.rend(); ++ iter) {
+    for (iter = stack_.rbegin(); iter != stack_.rend(); ++iter) {
         (*iter)->Commit(word_);
     }
 }
@@ -215,7 +198,7 @@ void SKKInputEngine::ToggleJisx0201Kana() {
     terminate();
 
     SKKEntry& entry = context_->entry;
-    
+
     study(entry, SKKCandidate());
 
     insert(entry.ToggleJisx0201Kana(inputMode()));
@@ -224,12 +207,13 @@ void SKKInputEngine::ToggleJisx0201Kana() {
 void SKKInputEngine::UpdateInputContext() {
     context_->output.Clear();
 
-    std::for_each(stack_.begin(), stack_.end(),
-                  std::mem_fun(&SKKBaseEditor::WriteContext));
+    std::for_each(
+        stack_.begin(), stack_.end(), std::mem_fun(&SKKBaseEditor::WriteContext)
+    );
 
     // 非確定文字があれば挿入(ex. "ky" など)
-    if(config_->DisplayShortestMatchOfKanaConversions()
-       && !inputState_.intermediate.empty()) {
+    if (config_->DisplayShortestMatchOfKanaConversions() &&
+        !inputState_.intermediate.empty()) {
         context_->output.Compose(inputState_.intermediate);
     } else {
         context_->output.Compose(inputState_.queue);
@@ -248,9 +232,7 @@ bool SKKInputEngine::IsOkuriComplete() const {
 
 // ----------------------------------------------------------------------
 
-SKKBaseEditor* SKKInputEngine::top() const {
-    return stack_.back();
-}
+SKKBaseEditor* SKKInputEngine::top() const { return stack_.back(); }
 
 SKKInputMode SKKInputEngine::inputMode() const {
     return *(env_->InputModeSelector());
@@ -263,19 +245,17 @@ void SKKInputEngine::initialize() {
     context_->dynamic_completion = false;
     context_->annotation = false;
 
-    if(context_->registration == SKKRegistration::Aborted) {
+    if (context_->registration == SKKRegistration::Aborted) {
         context_->registration.Clear();
         env_->InputModeSelector()->Refresh();
     }
 }
 
-void SKKInputEngine::push(SKKBaseEditor* editor) {
-    stack_.push_back(editor);
-}
+void SKKInputEngine::push(SKKBaseEditor* editor) { stack_.push_back(editor); }
 
 void SKKInputEngine::terminate() {
     // ローマ字かな変換を打ち切る
-    if(config_->FixIntermediateConversion()) {
+    if (config_->FixIntermediateConversion()) {
         inputQueue_.Terminate();
     } else {
         inputQueue_.Clear();
@@ -283,7 +263,7 @@ void SKKInputEngine::terminate() {
 }
 
 void SKKInputEngine::invoke(SKKBaseEditor::Event event) {
-    if(!inputQueue_.IsEmpty()) {
+    if (!inputQueue_.IsEmpty()) {
         inputQueue_.Clear();
         context_->event_handled = false;
     } else {
@@ -291,10 +271,15 @@ void SKKInputEngine::invoke(SKKBaseEditor::Event event) {
     }
 }
 
-void SKKInputEngine::study(const SKKEntry& entry, const SKKCandidate& candidate) {
-    if(entry.IsEmpty()) return;
-    if(entry.IsOkuriAri() && entry.OkuriString().empty()) return;
-    if(entry.IsOkuriAri() && candidate.IsEmpty()) return;
+void SKKInputEngine::study(
+    const SKKEntry& entry, const SKKCandidate& candidate
+) {
+    if (entry.IsEmpty())
+        return;
+    if (entry.IsOkuriAri() && entry.OkuriString().empty())
+        return;
+    if (entry.IsOkuriAri() && candidate.IsEmpty())
+        return;
 
     SKKBackEnd::theInstance().Register(entry, candidate);
 }
@@ -305,10 +290,12 @@ void SKKInputEngine::insert(const std::string& str) {
 
 // ----------------------------------------------------------------------
 
-void SKKInputEngine::SKKInputQueueUpdate(const SKKInputQueueObserver::State& state) {
+void SKKInputEngine::SKKInputQueueUpdate(
+    const SKKInputQueueObserver::State& state
+) {
     inputState_ = state;
 
-    if(inputMode() == AsciiInputMode) {
+    if (inputMode() == AsciiInputMode) {
         top()->Input(state.fixed);
     } else {
         top()->Input(state.fixed, state.queue, state.code);

@@ -24,7 +24,7 @@
 // level 1：構築
 // ======================================================================
 State SKKState::Composing(const Event& event) {
-    switch(event) {
+    switch (event) {
     case EXIT_EVENT:
         return State::SaveHistory();
 
@@ -42,7 +42,7 @@ State SKKState::Composing(const Event& event) {
 State SKKState::Edit(const Event& event) {
     const SKKEvent& param = event.Param();
 
-    switch(event) {
+    switch (event) {
     case EXIT_EVENT:
         context_->undo.Clear();
 
@@ -53,14 +53,14 @@ State SKKState::Edit(const Event& event) {
         editor_->Commit();
 
         // 改行するかどうか？(egg-like-new-line)
-        if(event == SKK_ENTER && !configuration_->SuppressNewlineOnCommit()) {
+        if (event == SKK_ENTER && !configuration_->SuppressNewlineOnCommit()) {
             return State::Forward(&SKKState::KanaInput);
         }
 
         return State::Transition(&SKKState::KanaInput);
 
     case SKK_CANCEL:
-        if(context_->undo.IsActive()) {
+        if (context_->undo.IsActive()) {
             context_->output.Fix(context_->undo.Candidate());
         }
 
@@ -69,7 +69,7 @@ State SKKState::Edit(const Event& event) {
     case SKK_BACKSPACE:
         editor_->HandleBackSpace();
 
-        if(context_->needs_setback) {
+        if (context_->needs_setback) {
             return State::Transition(&SKKState::KanaInput);
         }
 
@@ -96,16 +96,17 @@ State SKKState::Edit(const Event& event) {
         return 0;
 
     case SKK_CHAR:
-        if(param.IsCompConversion()) {
+        if (param.IsCompConversion()) {
             completer_.Execute(1);
         }
 
-        if(param.IsNextCandidate() || param.IsCompConversion()) {
-            if(context_->entry.IsEmpty()) {
+        if (param.IsNextCandidate() || param.IsCompConversion()) {
+            if (context_->entry.IsEmpty()) {
                 return State::Transition(&SKKState::KanaInput);
             }
 
-            if(selector_.Execute(configuration_->MaxCountOfInlineCandidates())) {
+            if (selector_.Execute(configuration_->MaxCountOfInlineCandidates()
+                )) {
                 return State::Transition(&SKKState::SelectCandidate);
             }
 
@@ -123,7 +124,7 @@ State SKKState::Edit(const Event& event) {
 // ======================================================================
 State SKKState::EntryInput(const Event& event) {
     // 履歴を保存するだけ
-    switch(event) {
+    switch (event) {
     case ENTRY_EVENT:
         editor_->SetStateComposing();
         return 0;
@@ -132,7 +133,7 @@ State SKKState::EntryInput(const Event& event) {
         return State::SaveHistory();
 
     case SKK_TAB:
-        if(completer_.Execute()) {
+        if (completer_.Execute()) {
             return State::Transition(&SKKState::EntryCompletion);
         }
         return 0;
@@ -147,7 +148,7 @@ State SKKState::EntryInput(const Event& event) {
 State SKKState::KanaEntry(const Event& event) {
     const SKKEvent& param = event.Param();
 
-    switch(event) {
+    switch (event) {
     case ENTRY_EVENT:
         // 再入用
         editor_->SetStateComposing();
@@ -155,24 +156,25 @@ State SKKState::KanaEntry(const Event& event) {
 
     case SKK_CHAR:
         // 変換
-        if(param.IsNextCandidate()) break;
+        if (param.IsNextCandidate())
+            break;
 
         // トグル変換 #1
-        if(param.IsToggleKana()) {
+        if (param.IsToggleKana()) {
             editor_->ToggleKana();
             return State::Transition(&SKKState::KanaInput);
         }
 
         // トグル変換 #2
-        if(param.IsToggleJisx0201Kana()) {
+        if (param.IsToggleJisx0201Kana()) {
             editor_->ToggleJisx0201Kana();
             return State::Transition(&SKKState::KanaInput);
         }
 
         // Sticky key
-        if(param.IsStickyKey()) {
-            if(context_->entry.IsEmpty()) {
-                if(param.IsInputChars()) {
+        if (param.IsStickyKey()) {
+            if (context_->entry.IsEmpty()) {
+                if (param.IsInputChars()) {
                     editor_->HandleChar(param.code, param.IsDirect());
                 }
                 editor_->Commit();
@@ -183,23 +185,24 @@ State SKKState::KanaEntry(const Event& event) {
         }
 
         // 送りあり
-        if(param.IsUpperCases() && !context_->entry.IsEmpty()) {
+        if (param.IsUpperCases() && !context_->entry.IsEmpty()) {
             return State::Forward(&SKKState::OkuriInput);
         }
 
-        if(!editor_->CanConvert(param.code)) {
-            if(param.IsSwitchToAscii()) {
+        if (!editor_->CanConvert(param.code)) {
+            if (param.IsSwitchToAscii()) {
                 editor_->Commit();
                 return State::Transition(&SKKState::Ascii);
             }
 
-            if(param.IsSwitchToJisx0208Latin()) {
+            if (param.IsSwitchToJisx0208Latin()) {
                 editor_->Commit();
                 return State::Transition(&SKKState::Jisx0208Latin);
             }
 
-            if(param.IsEnterJapanese()) {
-                if(configuration_->HandleRecursiveEntryAsOkuri() && !context_->entry.IsEmpty()) {
+            if (param.IsEnterJapanese()) {
+                if (configuration_->HandleRecursiveEntryAsOkuri() &&
+                    !context_->entry.IsEmpty()) {
                     return State::Transition(&SKKState::OkuriInput);
                 }
 
@@ -208,7 +211,7 @@ State SKKState::KanaEntry(const Event& event) {
             }
         }
 
-        if(param.IsInputChars()) {
+        if (param.IsInputChars()) {
             editor_->HandleChar(param.code, param.IsDirect());
             return 0;
         }
@@ -225,20 +228,21 @@ State SKKState::KanaEntry(const Event& event) {
 State SKKState::AsciiEntry(const Event& event) {
     const SKKEvent& param = event.Param();
 
-    switch(event) {
+    switch (event) {
     case ENTRY_EVENT:
         editor_->SelectInputMode(AsciiInputMode);
         return 0;
 
     case SKK_CHAR:
-        if(param.IsNextCandidate()) break;
+        if (param.IsNextCandidate())
+            break;
 
-        if(param.IsToggleJisx0201Kana() && !context_->entry.IsEmpty()) {
+        if (param.IsToggleJisx0201Kana() && !context_->entry.IsEmpty()) {
             editor_->ToggleJisx0201Kana();
             return State::Transition(&SKKState::KanaInput);
         }
 
-        if(param.IsInputChars()) {
+        if (param.IsInputChars()) {
             editor_->HandleChar(param.code, param.IsDirect());
             return 0;
         }
@@ -255,29 +259,29 @@ State SKKState::AsciiEntry(const Event& event) {
 State SKKState::EntryCompletion(const Event& event) {
     const SKKEvent& param = event.Param();
 
-    switch(event) {
+    switch (event) {
     case ENTRY_EVENT:
         editor_->SetStateComposing();
         return 0;
 
     case SKK_TAB:
     case SKK_CHAR:
-        if(event == SKK_TAB || param.IsNextCompletion()) {
+        if (event == SKK_TAB || param.IsNextCompletion()) {
             completer_.Next();
             return 0;
         }
 
-        if(param.IsPrevCompletion()) {
+        if (param.IsPrevCompletion()) {
             completer_.Prev();
             return 0;
         }
 
-        if(param.IsNextCandidate()) {
+        if (param.IsNextCandidate()) {
             return &SKKState::Edit;
         }
 
-        if(param.IsRemoveTrigger()) {
-            if(completer_.Remove()) {
+        if (param.IsRemoveTrigger()) {
+            if (completer_.Remove()) {
                 messenger_->SendMessage("見出し語を削除しました");
                 return State::Transition(&SKKState::KanaInput);
             } else {
@@ -287,7 +291,7 @@ State SKKState::EntryCompletion(const Event& event) {
 
     default:
         // システムイベント以外は履歴に転送する
-        if(!event.IsSystem()) {
+        if (!event.IsSystem()) {
             return State::DeepForward(&SKKState::EntryInput);
         }
     }
@@ -301,7 +305,7 @@ State SKKState::EntryCompletion(const Event& event) {
 State SKKState::SelectCandidate(const Event& event) {
     const SKKEvent& param = event.Param();
 
-    switch(event) {
+    switch (event) {
     case ENTRY_EVENT:
         editor_->SetStateSelectCandidate();
         selector_.Show();
@@ -316,7 +320,7 @@ State SKKState::SelectCandidate(const Event& event) {
         editor_->Commit();
 
         // 改行するかどうか？(egg-like-new-line)
-        if(event == SKK_ENTER && !configuration_->SuppressNewlineOnCommit()) {
+        if (event == SKK_ENTER && !configuration_->SuppressNewlineOnCommit()) {
             return State::Forward(&SKKState::KanaInput);
         }
 
@@ -342,7 +346,8 @@ State SKKState::SelectCandidate(const Event& event) {
         return 0;
 
     case SKK_BACKSPACE:
-        if(selector_.IsInline() && configuration_->InlineBackSpaceImpliesCommit()) {
+        if (selector_.IsInline() &&
+            configuration_->InlineBackSpaceImpliesCommit()) {
             editor_->Commit();
             return State::Forward(&SKKState::KanaInput);
         }
@@ -350,31 +355,31 @@ State SKKState::SelectCandidate(const Event& event) {
         // fall through
 
     case SKK_CHAR:
-        if(event == SKK_BACKSPACE || param.IsPrevCandidate()) {
-            if(!selector_.Prev()) {
+        if (event == SKK_BACKSPACE || param.IsPrevCandidate()) {
+            if (!selector_.Prev()) {
                 return State::DeepHistory(&SKKState::EntryInput);
             }
             return 0;
         }
 
-        if(param.IsNextCandidate()) {
-            if(!selector_.Next()) {
+        if (param.IsNextCandidate()) {
+            if (!selector_.Next()) {
                 return State::Transition(&SKKState::RecursiveRegister);
             }
             return 0;
         }
 
-        if(param.IsRemoveTrigger()) {
+        if (param.IsRemoveTrigger()) {
             return State::Transition(&SKKState::EntryRemove);
         }
 
-        if(param.IsInputChars() || param.IsToggleJisx0201Kana()) {
-            if(selector_.IsInline()) {
+        if (param.IsInputChars() || param.IsToggleJisx0201Kana()) {
+            if (selector_.IsInline()) {
                 editor_->Commit();
                 return State::DeepForward(&SKKState::KanaInput);
             }
 
-            if(selector_.Select(param.code)) {
+            if (selector_.Select(param.code)) {
                 editor_->Commit();
                 return State::Transition(&SKKState::KanaInput);
             }
@@ -392,7 +397,7 @@ State SKKState::SelectCandidate(const Event& event) {
 State SKKState::OkuriInput(const Event& event) {
     const SKKEvent& param = event.Param();
 
-    switch(event) {
+    switch (event) {
     case ENTRY_EVENT:
         editor_->SetStateOkuri();
         return 0;
@@ -402,7 +407,7 @@ State SKKState::OkuriInput(const Event& event) {
         editor_->Commit();
 
         // 改行するかどうか？(egg-like-new-line)
-        if(event == SKK_ENTER && !configuration_->SuppressNewlineOnCommit()) {
+        if (event == SKK_ENTER && !configuration_->SuppressNewlineOnCommit()) {
             return State::Forward(&SKKState::KanaInput);
         }
 
@@ -423,19 +428,20 @@ State SKKState::OkuriInput(const Event& event) {
     case SKK_BACKSPACE:
         editor_->HandleBackSpace();
 
-        if(context_->needs_setback) {
+        if (context_->needs_setback) {
             return State::Transition(&SKKState::KanaEntry);
         }
 
         return 0;
 
     case SKK_CHAR:
-        if(param.IsInputChars()) {
+        if (param.IsInputChars()) {
             editor_->HandleChar(param.code, param.IsDirect());
         }
 
-        if(param.IsNextCandidate() || editor_->IsOkuriComplete()) {
-            if(selector_.Execute(configuration_->MaxCountOfInlineCandidates())) {
+        if (param.IsNextCandidate() || editor_->IsOkuriComplete()) {
+            if (selector_.Execute(configuration_->MaxCountOfInlineCandidates()
+                )) {
                 return State::Transition(&SKKState::SelectCandidate);
             }
 

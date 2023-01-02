@@ -1,8 +1,8 @@
+#include "MockCompletionHelper.h"
 #include "SKKDistributedUserDictionary.h"
 #include "pthreadutil.h"
 #include "socketutil.h"
 #include "stringutil.h"
-#include "MockCompletionHelper.h"
 
 class param {
     string::splitter splitter_;
@@ -13,7 +13,7 @@ public:
 
         splitter_ >> command >> entry;
 
-        if(command == "PUT" || command == "DELETE") {
+        if (command == "PUT" || command == "DELETE") {
             splitter_ >> candidate;
         }
 
@@ -32,24 +32,24 @@ class server : public pthread::task {
     void session(std::iostream& stream) {
         std::string line;
 
-        while(std::getline(stream, line)) {
+        while (std::getline(stream, line)) {
             param param(line);
 
-            stream << "OK" << "\r\n" << std::flush;
+            stream << "OK"
+                   << "\r\n"
+                   << std::flush;
 
-            if(param.command == "GET" || param.command == "COMPLETE") {
+            if (param.command == "GET" || param.command == "COMPLETE") {
                 stream << "\r\n" << std::flush;
             }
         }
     }
 
 public:
-    server() {
-        server_.open(10789);
-    }
+    server() { server_.open(10789); }
 
     virtual bool run() {
-        while(int fd = server_.accept()) {
+        while (int fd = server_.accept()) {
             net::socket::tcpstream stream(fd);
 
             session(stream);
@@ -74,7 +74,7 @@ int main() {
     assert(dict.ReverseLookup("not found") == "");
 
     helper.Initialize("かんじ");
-    
+
     dict.Complete(helper);
 
     assert(helper.Result().empty());

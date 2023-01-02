@@ -1,22 +1,22 @@
-#include <cassert>
-#include "SKKSelector.h"
-#include "SKKCandidateWindow.h"
 #include "SKKBackEnd.h"
+#include "SKKCandidateWindow.h"
 #include "SKKCommonDictionary.h"
 #include "SKKDictionaryFactory.h"
+#include "SKKSelector.h"
+#include <cassert>
 
-#include "MockFrontEnd.h"
 #include "MockCandidateWindow.h"
+#include "MockFrontEnd.h"
 
 class MockBuddy : public SKKSelectorBuddy {
     SKKCandidate candidate_;
 
     virtual const SKKEntry SKKSelectorQueryEntry() {
-	return SKKEntry("かんじ");
+        return SKKEntry("かんじ");
     }
 
     virtual void SKKSelectorUpdate(const SKKCandidate& candidate) {
-	candidate_ = candidate;
+        candidate_ = candidate;
     }
 
 public:
